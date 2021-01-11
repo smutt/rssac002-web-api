@@ -118,7 +118,87 @@ function parse_yaml_file(string $metric, string $contents) {
   }
 }
 
-function get_values_by_day(string $derp){
+// Takes a string representing some sequence of letter
+// Returns an array of letters, all valid RSIs
+// Return false if string is invalid
+function parse_letters(string $input){
+  global $RSIS;
+
+  if( strlen($input) > 50 || strlen($input) < 1){ // Somewhat arbitrary, but 50 should be enough
+    return false;
+  }
+  $input = trim(strtolower($input));
+
+  $allowed_chars = array_merge($RSIS, array(",", "-"));
+  if( str_replace($allowed_chars, "", $input) !== ""){ // Invalid characters detected
+    return false;
+  }
+
+  $input = str_split($input);
+  if( $input[0] === "," || $input[0] === "-"){
+    return false;
+  }
+  if( end($input) === "," || end($input) === "-"){
+    return false;
+  }
+
+  $rv = [];
+  $range_begin = "";
+  foreach( $input as $tok){
+    if( $range_begin){ // Previous character was a '-'
+      if( !in_array($tok, $RSIS)){ // $tok must be a letter here
+        return false;
+      }elseif( $range_begin >= $tok){ // range must be ascending
+        return false;
+      }else{
+        $range_begin = "";
+        foreach($RSIS as $rsi){
+          if( $rsi > $range_begin && $rsi < $tok){
+            if( !in_array($rsi, $rv)){
+              array_push($rv, $rsi);
+            }
+          }
+        }
+      }
+    }
+
+    if( in_array($tok, $RSIS)){
+      if( !in_array($tok, $rv)){
+        array_push($rv, $tok);
+      }
+    }elseif( $tok === ","){
+      continue;
+    }elseif( $tok === "-"){
+      $range_begin = end($rv);
+    }
+  }
+  sort($rv, SORT_STRING);
+  return $rv;
+}
+
+function get_load_time_by_date(string $letters, string $start_date, string $end_date){
+  return "HERP";
+}
+
+
+function get_rcode_volume_by_date(string $letters, string $start_date, string $end_date){
+  return "\nHERP";
+}
+
+
+function get_traffic_sizes_by_date(string $letters, string $start_date, string $end_date){
+  return "\nHERP";
+}
+
+function get_unique_sources_by_date(string $letters, string $start_date, string $end_date){
+  return "\nHERP";
+}
+
+function get_zone_size_by_date(string $letters, string $start_date, string $end_date){
+  return "\nHERP";
+}
+
+function get_traffic_volume_by_date(string $letters, string $start_date, string $end_date){
   return "\nHERP";
 }
 
