@@ -118,4 +118,9 @@ function parse_yaml_file(string $metric, string $contents) {
   }
 }
 
+function get_values_by_day(string $derp){
+  return "\nHERP";
+}
+
+
 ?>
