@@ -176,6 +176,33 @@ function parse_letters(string $input){
   return $rv;
 }
 
+// Get all dates between passed start and end dates
+function get_dates(string $start_input, string $end_input){
+  // Check input
+  $start = date_parse_from_format("Y-m-d", $start_input);
+  $end = date_parse_from_format("Y-m-d", $end_input);
+  if( !checkdate($start['month'], $start['day'], $start['year'])) { return false; }
+  if( !checkdate($end['month'], $end['day'], $end['year'])){ return false; }
+
+  $start = DateTime::createFromFormat("Y-m-d", $start_input);
+  $end = DateTime::createFromFormat("Y-m-d", $end_input);
+  if( $start > $end){ return false; }
+  $interval = new DateInterval("P1D"); // 1 day
+  $rv = array();
+
+  $current_day = $start;
+  do{
+    $current_year = $current_day->format('Y');
+    if( !array_key_exists($current_year, $rv)){
+      $rv[$current_year] = array();
+    }
+    array_push($rv[$current_year], $current_day->format('Y-m-d'));
+    $current_day->add($interval);
+  }while($current_day <= $end);
+
+  return $rv;
+}
+
 function get_load_time_by_date(string $letters, string $start_date, string $end_date){
   return "HERP";
 }
