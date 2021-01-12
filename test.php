@@ -23,6 +23,7 @@ assert(true == 1);
 // Test parse_letters()
 assert(parse_letters("a") == array("a"));
 assert(parse_letters("a,c,b") == array("a", "b", "c"));
+assert(parse_letters('d-g') == array('d','e','f','g'));
 assert(parse_letters('m,b,l,a-f') == array('a','b','c','d','e','f','l','m'));
 assert(parse_letters('b,a-k') == array('a','b','c','d','e','f','g','h','i','j','k'));
 assert(parse_letters('h,,,a-c') == array('a','b','c','h'));

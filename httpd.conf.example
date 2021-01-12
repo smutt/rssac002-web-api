@@ -1,0 +1,16 @@
+server "rssac002.depht.com" {
+        listen on * port 80
+	root "/htdocs/rssac002.depht.com"
+
+	location match "^/api/v1/(.*)" {
+		root "/htdocs/rssac002.depht.com/rssac002-web-api/api/v1"
+		request strip 2
+		request rewrite "/api/v1/%1.php"
+		fastcgi socket "/run/php-fpm.sock"
+	}
+
+	location "/*" {
+		root "/htdocs/rssac002.depht.com/www-home" 
+	}
+}
+
