@@ -34,7 +34,7 @@ function get_value(&$arr, $key) {
     }
   }
   print("\nFound NULL for " . $key);
-  return null;
+  return NULL;
 }
 
 // Parses RSSAC002 YAML file and returns the stuff we care about
@@ -143,7 +143,6 @@ function parse_letters(string $input){
       }elseif( $range_begin >= $tok){ // range must be ascending
         return false;
       }else{
-        $range_begin = "";
         foreach($RSIS as $rsi){
           if( $rsi > $range_begin && $rsi < $tok){
             if( !in_array($rsi, $rv)){
@@ -152,6 +151,7 @@ function parse_letters(string $input){
           }
         }
       }
+      $range_begin = "";
     }
 
     if( in_array($tok, $RSIS)){
@@ -169,7 +169,7 @@ function parse_letters(string $input){
 }
 
 // Get all dates between passed start and end dates
-function get_dates(string $start_input, string $end_input){
+function parse_dates(string $start_input, string $end_input){
   // Check input
   if( strlen($start_input) > 10 || strlen($end_input) > 10) { return false; }
   if( preg_replace("/[0-9\-]+/", "", $start_input) !== ""){ return false; }
@@ -191,38 +191,42 @@ function get_dates(string $start_input, string $end_input){
     if( !array_key_exists($current_year, $rv)){
       $rv[$current_year] = array();
     }
-    array_push($rv[$current_year], $current_day->format('Y-m-d'));
+    array_push($rv[$current_year], $current_day->format('Ymd'));
     $current_day->add($interval);
   }while($current_day <= $end);
 
   return $rv;
 }
 
-function get_load_time_by_date(string $letters, string $start_date, string $end_date){
-  return "HERP";
+function get_metrics_by_date(string $metric, string $letters, string $start_date, string $end_date){
+  global $METRICS;
+  global $SERIALIZED_ROOT;
+
+  $metric = trim(strtolower($metric));
+  if( !in_array($metric, $METRICS)) { return false; }
+  $letters = parse_letters($letters);
+  if( $letters === false) { return false; }
+  $dates = parse_dates($start_date, $end_date);
+  if( $dates === false) { return false; }
+
+  $rv = array();
+  foreach( $letters as $let){
+    $rv[$let] = array();
+    foreach( $dates as $year => $year_days){
+      $year_data = file_get_contents($SERIALIZED_ROOT . '/' . $metric . '/' . $let . '/' . $year . '.ser');
+      if( $year_data === false) { return false; }
+      $year_data = unserialize($year_data);
+
+      foreach( $year_days as $day){
+        if( array_key_exists($day, $year_data)){
+          $rv[$let][$day] = $year_data[$day];
+        }else{
+          $rv[$let][$day] = NULL;
+        }
+      }
+    }
+  }
+  return $rv;
 }
-
-
-function get_rcode_volume_by_date(string $letters, string $start_date, string $end_date){
-  return "\nHERP";
-}
-
-
-function get_traffic_sizes_by_date(string $letters, string $start_date, string $end_date){
-  return "\nHERP";
-}
-
-function get_unique_sources_by_date(string $letters, string $start_date, string $end_date){
-  return "\nHERP";
-}
-
-function get_zone_size_by_date(string $letters, string $start_date, string $end_date){
-  return "\nHERP";
-}
-
-function get_traffic_volume_by_date(string $letters, string $start_date, string $end_date){
-  return "\nHERP";
-}
-
 
 ?>
