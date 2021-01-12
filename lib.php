@@ -124,23 +124,15 @@ function parse_yaml_file(string $metric, string $contents) {
 function parse_letters(string $input){
   global $RSIS;
 
-  if( strlen($input) > 50 || strlen($input) < 1){ // Somewhat arbitrary, but 50 should be enough
-    return false;
-  }
+  // Check input
   $input = trim(strtolower($input));
-
+  if( strlen($input) > 50 || strlen($input) < 1){ return false; }
   $allowed_chars = array_merge($RSIS, array(",", "-"));
-  if( str_replace($allowed_chars, "", $input) !== ""){ // Invalid characters detected
-    return false;
-  }
+  if( str_replace($allowed_chars, "", $input) !== ""){ return false; }
 
   $input = str_split($input);
-  if( $input[0] === "," || $input[0] === "-"){
-    return false;
-  }
-  if( end($input) === "," || end($input) === "-"){
-    return false;
-  }
+  if( $input[0] === "," || $input[0] === "-"){ return false; }
+  if( end($input) === "," || end($input) === "-"){ return false; }
 
   $rv = [];
   $range_begin = "";
@@ -179,6 +171,9 @@ function parse_letters(string $input){
 // Get all dates between passed start and end dates
 function get_dates(string $start_input, string $end_input){
   // Check input
+  if( strlen($start_input) > 10 || strlen($end_input) > 10) { return false; }
+  if( preg_replace("/[0-9\-]+/", "", $start_input) !== ""){ return false; }
+  if( preg_replace("/[0-9\-]+/", "", $end_input) !== ""){ return false; }
   $start = date_parse_from_format("Y-m-d", $start_input);
   $end = date_parse_from_format("Y-m-d", $end_input);
   if( !checkdate($start['month'], $start['day'], $start['year'])) { return false; }

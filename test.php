@@ -17,7 +17,7 @@ assert_options(ASSERT_CALLBACK, 'assert_handler');
 assert_options(ASSERT_ACTIVE, true);
 assert_options(ASSERT_WARNING, true);
 
-print("Starting tests\n");
+print("Running tests\n");
 assert(true == 1);
 
 // Test parse_letters()
@@ -34,5 +34,6 @@ assert(parse_letters('g-c') == false);
 // Test get_dates()
 assert(get_dates('2014-01-30', '2014-02-01') == array(2014 => array('2014-01-30','2014-01-31','2014-02-01')));
 assert(get_dates('2014-asds', '2014-02-01') == false);
+assert(get_dates('2014-02-03', '2014-02-01') == false);
 
 ?>
