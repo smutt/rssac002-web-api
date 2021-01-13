@@ -55,9 +55,9 @@ function parse_yaml_file(string $metric, string $contents) {
     if( array_key_exists("time", $yaml)){
       if( is_array($yaml["time"])) {
         if( count($yaml["time"]) > 0){
-          $rv["time"] = array();
+          $rv = array();
           foreach($yaml["time"] as $key => $val){
-            $rv["time"][$key] = $val;
+            $rv[$key] = $val;
           }
           return $rv;
         }
