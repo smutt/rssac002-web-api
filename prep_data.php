@@ -34,7 +34,8 @@ foreach( $METRICS as $metric){
                   if( $day_data === false){
                     print("\nError parsing YAML file" . $yaml_file);
                   }else{
-                    $data[$day] = $day_data;
+                    $dtime = DateTime::createFromFormat("Ymd", $day);
+                    $data[$dtime->format('Y-m-d')] = $day_data;
                   }
                 }else{
                   print("\nBad date in file format " . $yaml_file);

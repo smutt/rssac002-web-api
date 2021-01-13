@@ -198,7 +198,7 @@ function parse_dates(string $start_input, string $end_input){
     if( !array_key_exists($current_year, $rv)){
       $rv[$current_year] = array();
     }
-    array_push($rv[$current_year], $current_day->format('Ymd'));
+    array_push($rv[$current_year], $current_day->format('Y-m-d'));
     $current_day->add($interval);
   }while($current_day <= $end);
 
