@@ -3,7 +3,7 @@
 
 // Globals
 $RSSAC002_DATA_ROOT = '../RSSAC002-data';
-$METRICS = ['load-time', 'traffic-volume', 'rcode-volume', 'traffic-sizes', 'unique-sources', 'zone-size'];
+$METRICS = ['traffic-sizes', 'load-time', 'traffic-volume', 'rcode-volume', 'unique-sources', 'zone-size'];
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
 $YEARS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'];
 if( php_sapi_name() == 'cli'){
@@ -79,17 +79,17 @@ function parse_yaml_file(string $metric, string $contents) {
     foreach( $sizes as $size){
       $rv[$size] = array();
     }
+
     foreach( $sizes as $size){
       if( array_key_exists($size, $yaml)){
         if( is_array($yaml[$size])){
           foreach( $yaml[$size] as $key => $val){
             $rv[$size][$key] = $val;
           }
-          return $rv;
         }
       }
     }
-    return false;
+    return $rv;
 
   case "unique-sources":
     $rv["num-sources-ipv4"] = get_value($yaml, "num-sources-ipv4");
