@@ -1,12 +1,16 @@
 <?php
 /* Copyright Andrew McConachie <andrew@depht.com> 2021 */
 
-// Constants
+// Globals
 $RSSAC002_DATA_ROOT = '../RSSAC002-data';
-$SERIALIZED_ROOT = '../serialized';
 $METRICS = ['load-time', 'traffic-volume', 'rcode-volume', 'traffic-sizes', 'unique-sources', 'zone-size'];
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
 $YEARS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'];
+if( php_sapi_name() == 'cli'){
+  $SERIALIZED_ROOT = '../serialized';
+}else{
+  $SERIALIZED_ROOT = '/htdocs/rssac002.depht.com/serialized';
+}
 
 // Writes a serialized version of passed $data to $fname
 function write_serialized_file(string $fname, &$data){
@@ -129,6 +133,9 @@ function parse_letters(string $input){
   if( strlen($input) > 50 || strlen($input) < 1){ return false; }
   $allowed_chars = array_merge($RSIS, array(",", "-"));
   if( str_replace($allowed_chars, "", $input) !== ""){ return false; }
+  if( trim($input, ",-") !== $input){ return false; }
+  if( strpos($input, ",-") !== false){ return false; }
+  if( strpos($input, "-,") !== false){ return false; }
 
   $input = str_split($input);
   if( $input[0] === "," || $input[0] === "-"){ return false; }
@@ -213,7 +220,9 @@ function get_metrics_by_date(string $metric, string $letters, string $start_date
   foreach( $letters as $let){
     $rv[$let] = array();
     foreach( $dates as $year => $year_days){
-      $year_data = file_get_contents($SERIALIZED_ROOT . '/' . $metric . '/' . $let . '/' . $year . '.ser');
+      $fname = $SERIALIZED_ROOT . '/' . $metric . '/' . $let . '/' . $year . '.ser';
+      if( !is_readable($fname)){ return false; }
+      $year_data = file_get_contents($fname);
       if( $year_data === false) { return false; }
       $year_data = unserialize($year_data);
 

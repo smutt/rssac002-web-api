@@ -27,10 +27,11 @@ assert(parse_letters('d-g') == array('d','e','f','g'));
 assert(parse_letters('m,b,l,a-f') == array('a','b','c','d','e','f','l','m'));
 assert(parse_letters('b,a-k') == array('a','b','c','d','e','f','g','h','i','j','k'));
 assert(parse_letters('h,,,a-c') == array('a','b','c','h'));
-assert(parse_letters('-b') == false);
-assert(parse_letters('b,a-k,') == false);
-assert(parse_letters('n') == false);
-assert(parse_letters('g-c') == false);
+assert(parse_letters('-b') === false);
+assert(parse_letters('b,a-k,') === false);
+assert(parse_letters('n') === false);
+assert(parse_letters('g-c') === false);
+assert(parse_letters('f,k,-l') === false);
 
 // Test parse_dates()
 assert(parse_dates('2014-01-30', '2014-02-01') == array(2014 => array('20140130','20140131','20140201')));
