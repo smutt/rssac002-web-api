@@ -238,4 +238,35 @@ function get_metrics_by_date(string $metric, string $letters, string $start_date
   return $rv;
 }
 
+// TODO: make this work with more metrics, currently only works with 'traffic-volume'
+function handle_request(string $metric, string $letters, string $start_date, string $end_date, int $divisor, bool $totals){
+  // Check input
+  if( !(is_int($divisor / 10) || $divisor == 1)) { return false; }
+  if( !is_bool($totals)) { return false; }
+
+  $metrics = get_metrics_by_date($metric, $letters, $start_date, $end_date);
+  if( $divisor === 0 && $totals === false){ return $metrics; }
+
+  $rv = array();
+  foreach( $metrics as $k_let => $v_let){
+    $rv[$k_let] = array();
+    foreach( $v_let as $k_date => $v_date){
+      foreach( $v_date as $key => $value){
+        if( $totals){
+          if( in_array($k_date, $rv[$k_let])){
+            $rv[$k_let][$k_date] += $value;
+          }else{
+            $rv[$k_let][$k_date] = $value;
+          }
+        }else{
+          $rv[$k_let][$k_date][$key] = intdiv($value, $divisor);
+        }
+      }
+      if( $divisor != 1 && $totals){
+        $rv[$k_let][$k_date] = intdiv($rv[$k_let][$k_date], $divisor);
+      }
+    }
+  }
+  return $rv;
+}
 ?>

@@ -1,16 +1,10 @@
 <?php
 /* Copyright Andrew McConachie <andrew@depht.com> 2021 */
-//error_reporting(E_ALL);
 
 require_once "../../lib.php";
-header('Content-Type: application/json');
+require_once "../../check_input.php";
 
-if( !isset($_GET['letters']) || !isset($_GET['start_date']) || !isset($_GET['end_date'])){
-  http_response_code(400);
-  exit(1);
-}
-
-$raw_metrics = get_metrics_by_date('traffic-volume', $_GET['letters'], $_GET['start_date'], $_GET['end_date']);
+$raw_metrics = handle_request('traffic-volume', $_GET['letters'], $_GET['start_date'], $_GET['end_date'], $divisor, $totals);
 if( $raw_metrics === false){
   http_response_code(400);
   exit(1);

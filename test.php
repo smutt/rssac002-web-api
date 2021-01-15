@@ -39,6 +39,7 @@ assert(parse_dates('2014-asds', '2014-02-01') == false);
 assert(parse_dates('2014-02-03', '2014-02-01') == false);
 
 // Test get_metrics_by_date()
+// TODO: Need more test cases here
 assert(get_metrics_by_date('load-time', 'a', '2015-06-30', '2015-07-01') ===
        array('a' => array('2015-06-30' => array(2015063000 => 1183, 2015063001 => 267),
                           '2015-07-01' => array(2015070100 => 1205, 2015070101 => 530))));
@@ -48,4 +49,27 @@ assert(get_metrics_by_date('load-time', 'b-c', '2017-02-04', '2017-02-05') ===
              'c' => array('2017-02-04' => array(2017020400 => 2, 2017020401 => 2),
                           '2017-02-05' => array(2017020500 => 13, 2017020501 => 2))));
 
+// Test handle_request()
+// TODO: need more test cases here
+assert(handle_request('traffic-volume', 'l', '2016-02-03', '2016-02-04', 1, true) ===
+       array('l' => array('2016-02-03' => 1986120, '2016-02-04' => 1787392)));
+assert(handle_request('traffic-volume', 'b', '2016-02-03', '2016-02-04', 10, true) ===
+       array('b' => array('2016-02-03' => 59405, '2016-02-04' => 70385)));
+assert(handle_request('traffic-volume', 'd', '2016-02-03', '2016-02-04', 10, false) ===
+       array('d' => array('2016-02-03' => array('dns-udp-queries-received-ipv4' => 511273576,
+                                                'dns-udp-queries-received-ipv6' => 43377922,
+                                                'dns-tcp-queries-received-ipv4' => 2161459,
+                                                'dns-tcp-queries-received-ipv6' => 62967,
+                                                'dns-udp-responses-sent-ipv4' => 510078255,
+                                                'dns-udp-responses-sent-ipv6' => 43360121,
+                                                'dns-tcp-responses-sent-ipv4' => 2160221,
+                                                'dns-tcp-responses-sent-ipv6' => 62926),
+                          '2016-02-04' => array('dns-udp-queries-received-ipv4' => 483264374,
+                                                'dns-udp-queries-received-ipv6' => 43066933,
+                                                'dns-tcp-queries-received-ipv4' => 2244825,
+                                                'dns-tcp-queries-received-ipv6' => 63334,
+                                                'dns-udp-responses-sent-ipv4' => 481613324,
+                                                'dns-udp-responses-sent-ipv6' => 43050662,
+                                                'dns-tcp-responses-sent-ipv4' => 2242554,
+                                                'dns-tcp-responses-sent-ipv6' => 63302))));
 ?>
