@@ -97,11 +97,10 @@ function parse_yaml_file(string $metric, string $contents) {
     return $rv;
 
   case "zone-size":
-    $rv["size"] = array();
     if( array_key_exists("size", $yaml)){
       if( is_array($yaml["size"])){
         foreach($yaml["size"] as $key => $val){
-          $rv["size"][$key] = $val;
+          $rv[$key] = $val;
         }
         return $rv;
       }
