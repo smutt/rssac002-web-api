@@ -1,14 +1,8 @@
 <?php
 /* Copyright Andrew McConachie <andrew@depht.com> 2021 */
-//error_reporting(E_ALL);
 
 require_once "../../lib.php";
-header('Content-Type: application/json');
-
-if( !isset($_GET['letters']) || !isset($_GET['start_date']) || !isset($_GET['end_date'])){
-  http_response_code(400);
-  exit(1);
-}
+require_once "../../check_input.php";
 
 $raw_metrics = get_metrics_by_date('unique-sources', $_GET['letters'], $_GET['start_date'], $_GET['end_date']);
 if( $raw_metrics === false){
