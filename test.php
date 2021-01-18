@@ -72,4 +72,8 @@ assert(handle_request('traffic-volume', 'd', '2016-02-03', '2016-02-04', 10, fal
                                                 'dns-udp-responses-sent-ipv6' => 43050662,
                                                 'dns-tcp-responses-sent-ipv4' => 2242554,
                                                 'dns-tcp-responses-sent-ipv6' => 63302))));
+assert(handle_request('traffic-volume', 'l', '2019-02-10', '2016-03-01', 1, true) === false);
+assert(handle_request('traffic-volume', 'l', '2019-02-10', '2019-02-15', 1, true) ===
+       array('l' => array('2019-02-10' => NULL, '2019-02-11' => NULL, '2019-02-12' => NULL,
+                          '2019-02-13' => NULL, '2019-02-14' => NULL, '2019-02-15' => 28257543)));
 ?>

@@ -245,25 +245,31 @@ function handle_request(string $metric, string $letters, string $start_date, str
   if( !is_bool($totals)) { return false; }
 
   $metrics = get_metrics_by_date($metric, $letters, $start_date, $end_date);
+  if( $metrics === false){ return false; }
+
   if( $divisor === 0 && $totals === false){ return $metrics; }
 
   $rv = array();
   foreach( $metrics as $k_let => $v_let){
     $rv[$k_let] = array();
     foreach( $v_let as $k_date => $v_date){
-      foreach( $v_date as $key => $value){
-        if( $totals){
-          if( in_array($k_date, $rv[$k_let])){
-            $rv[$k_let][$k_date] += $value;
+      if( $v_date === NULL) {
+        $rv[$k_let][$k_date] = NULL;
+      }else{
+        foreach( $v_date as $key => $value){
+          if( $totals){
+            if( in_array($k_date, $rv[$k_let])){
+              $rv[$k_let][$k_date] += $value;
+            }else{
+              $rv[$k_let][$k_date] = $value;
+            }
           }else{
-            $rv[$k_let][$k_date] = $value;
+            $rv[$k_let][$k_date][$key] = intdiv($value, $divisor);
           }
-        }else{
-          $rv[$k_let][$k_date][$key] = intdiv($value, $divisor);
         }
-      }
-      if( $divisor != 1 && $totals){
-        $rv[$k_let][$k_date] = intdiv($rv[$k_let][$k_date], $divisor);
+        if( $divisor != 1 && $totals){
+          $rv[$k_let][$k_date] = intdiv($rv[$k_let][$k_date], $divisor);
+        }
       }
     }
   }
