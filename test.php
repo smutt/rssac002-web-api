@@ -49,6 +49,18 @@ assert(get_metrics_by_date('load-time', 'b-c', '2017-02-04', '2017-02-05') ===
              'c' => array('2017-02-04' => array(2017020400 => 2, 2017020401 => 2),
                           '2017-02-05' => array(2017020500 => 13, 2017020501 => 2))));
 
+assert(get_metrics_by_date('unique-sources', 'l', '2019-06-06', '2019-06-01') === false);
+assert(get_metrics_by_date('unique-sources', 'l', '2019-03-06', '2019-03-15') ===
+       array('l' => array('2019-03-06' => NULL, '2019-03-07' =>
+                          array('num-sources-ipv4' => 3496378, 'num-sources-ipv6' => 296395,
+                                'num-sources-ipv6-aggregate' => 195281),
+                          '2019-03-08' => NULL, '2019-03-09' => NULL, '2019-03-10' => NULL,
+                          '2019-03-11' => NULL, '2019-03-12' => NULL, '2019-03-13' =>
+                          array('num-sources-ipv4' => 0.0, 'num-sources-ipv6' => 0.0, // These are floats
+                                'num-sources-ipv6-aggregate' => 0.0), '2019-03-14' =>
+                          array('num-sources-ipv4' => 0.0, 'num-sources-ipv6' => 0.0,
+                                'num-sources-ipv6-aggregate' => 0.0), '2019-03-15' => NULL)));
+
 // Test handle_request()
 // TODO: need more test cases here
 assert(handle_request('traffic-volume', 'l', '2016-02-03', '2016-02-04', 1, true) ===
