@@ -5,7 +5,7 @@
 $RSSAC002_DATA_ROOT = '../RSSAC002-data';
 $METRICS = ['rcode-volume', 'traffic-sizes', 'load-time', 'traffic-volume', 'unique-sources', 'zone-size'];
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
-$YEARS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'];
+$YEARS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
 if( php_sapi_name() == 'cli'){
   $SERIALIZED_ROOT = '../serialized';
 }else{
