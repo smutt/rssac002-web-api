@@ -65,11 +65,28 @@ function parse_yaml_file(string $metric, string $contents) {
     }
     return false;
 
+  // Valid DNS RCODES
+  // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
   case "rcode-volume":
     foreach($yaml as $key => $val){
+      if( $key === "rcodes"){ // Handle broken YAML
+        if( is_array($val)){
+          foreach( $val as $rcode => $count){
+            if( is_numeric($rcode)){
+              if( $rcode >= 0 && $rcode <= 23){
+                $rv[$rcode] = $count;
+              }
+            }
+          }
+          return $rv;
+        }
+      }
+
       if( is_numeric($key)){
+        if( $key >= 0 && $key <= 23){
           $rv[$key] = $val;
         }
+      }
     }
     return $rv;
 
