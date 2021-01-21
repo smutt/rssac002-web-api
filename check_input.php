@@ -3,7 +3,7 @@
 //error_reporting(E_ALL);
 header('Content-Type: application/json');
 
-if( !isset($_GET['letters']) || !isset($_GET['start_date']) || !isset($_GET['end_date'])){
+if( !isset($_GET['rsi']) || !isset($_GET['start_date']) || !isset($_GET['end_date'])){
   http_response_code(400);
   exit(1);
 }
