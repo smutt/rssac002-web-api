@@ -63,11 +63,8 @@ assert(get_metrics_by_date('unique-sources', 'l', '2019-03-06', '2019-03-15') ==
 
 // Test handle_request()
 // TODO: need more test cases here
-assert(handle_request('traffic-volume', 'l', '2016-02-03', '2016-02-04', 1, true) ===
-       array('l' => array('2016-02-03' => 1986120, '2016-02-04' => 1787392)));
-assert(handle_request('traffic-volume', 'b', '2016-02-03', '2016-02-04', 10, true) ===
-       array('b' => array('2016-02-03' => 59405, '2016-02-04' => 70385)));
-assert(handle_request('traffic-volume', 'd', '2016-02-03', '2016-02-04', 10, false) ===
+assert(handle_traffic_volume_request('traffic-volume', 'l', '2019-02-10', '2016-03-01', 1, 'received') === false);
+assert(handle_traffic_volume_request('traffic-volume', 'd', '2016-02-03', '2016-02-04', 10, false) ===
        array('d' => array('2016-02-03' => array('dns-udp-queries-received-ipv4' => 511273576,
                                                 'dns-udp-queries-received-ipv6' => 43377922,
                                                 'dns-tcp-queries-received-ipv4' => 2161459,
@@ -84,8 +81,13 @@ assert(handle_request('traffic-volume', 'd', '2016-02-03', '2016-02-04', 10, fal
                                                 'dns-udp-responses-sent-ipv6' => 43050662,
                                                 'dns-tcp-responses-sent-ipv4' => 2242554,
                                                 'dns-tcp-responses-sent-ipv6' => 63302))));
-assert(handle_request('traffic-volume', 'l', '2019-02-10', '2016-03-01', 1, true) === false);
-assert(handle_request('traffic-volume', 'l', '2019-02-10', '2019-02-15', 1, true) ===
+assert(handle_traffic_volume_request('traffic-volume', 'f', '2020-09-29', '2020-09-30', 1000, 'sent') ===
+       array('f' => array('2020-09-29' => 22728495, '2020-09-30' => 22098756)));
+assert(handle_traffic_volume_request('traffic-volume', 'l', '2019-02-10', '2019-02-15', 1, 'sent') ===
        array('l' => array('2019-02-10' => NULL, '2019-02-11' => NULL, '2019-02-12' => NULL,
-                          '2019-02-13' => NULL, '2019-02-14' => NULL, '2019-02-15' => 28257543)));
+                          '2019-02-13' => NULL, '2019-02-14' => NULL, '2019-02-15' => 10443937460)));
+assert(handle_traffic_volume_request('traffic-volume', 'l', '2016-02-03', '2016-02-04', 1, 'received') ===
+       array('l' => array('2016-02-03' => 4809988763, '2016-02-04' => 5136536322)));
+assert(handle_traffic_volume_request('traffic-volume', 'b', '2016-02-03', '2016-02-04', 10, 'sent') ===
+       array('b' => array('2016-02-03' => 237999435, '2016-02-04' => 236101522)));
 ?>

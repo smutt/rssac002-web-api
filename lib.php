@@ -253,15 +253,17 @@ function get_metrics_by_date(string $metric, string $letters, string $start_date
   return $rv;
 }
 
-// TODO: make this work with more metrics, currently only works with 'traffic-volume'
-function handle_request(string $metric, string $letters, string $start_date, string $end_date, int $divisor, bool $totals){
+// Specific handler for traffic-volume
+function handle_traffic_volume_request(string $metric, string $letters, string $start_date, string $end_date, int $divisor, $totals){
   // Check input
   if( !(is_int($divisor / 10) || $divisor == 1)) { return false; }
-  if( !is_bool($totals)) { return false; }
+  if( !(is_bool($totals) || $totals === 'sent' || $totals === 'received')) { return false; }
+
+  $sent = ['dns-tcp-responses-sent-ipv4', 'dns-tcp-responses-sent-ipv6', 'dns-udp-responses-sent-ipv4', 'dns-udp-responses-sent-ipv6'];
+  $received = ['dns-tcp-queries-received-ipv4', 'dns-tcp-queries-received-ipv6', 'dns-udp-queries-received-ipv4', 'dns-udp-queries-received-ipv6'];
 
   $metrics = get_metrics_by_date($metric, $letters, $start_date, $end_date);
   if( $metrics === false){ return false; }
-
   if( $divisor === 0 && $totals === false){ return $metrics; }
 
   $rv = array();
@@ -273,16 +275,28 @@ function handle_request(string $metric, string $letters, string $start_date, str
       }else{
         foreach( $v_date as $key => $value){
           if( $totals){
-            if( in_array($k_date, $rv[$k_let])){
-              $rv[$k_let][$k_date] += $value;
-            }else{
-              $rv[$k_let][$k_date] = $value;
+            if( $totals == 'sent'){
+              if( in_array($key, $sent)){
+                if( array_key_exists($k_date, $rv[$k_let])){
+                  $rv[$k_let][$k_date] += $value;
+                }else{
+                  $rv[$k_let][$k_date] = $value;
+                }
+              }
+            }else{ // $totals == received
+              if( in_array($key, $received)){
+                if( array_key_exists($k_date, $rv[$k_let])){
+                  $rv[$k_let][$k_date] += $value;
+                }else{
+                  $rv[$k_let][$k_date] = $value;
+                }
+              }
             }
           }else{
             $rv[$k_let][$k_date][$key] = intdiv($value, $divisor);
           }
         }
-        if( $divisor != 1 && $totals){
+        if( $divisor != 1 && $totals !== false){
           $rv[$k_let][$k_date] = intdiv($rv[$k_let][$k_date], $divisor);
         }
       }

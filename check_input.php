@@ -9,13 +9,19 @@ if( !isset($_GET['rsi']) || !isset($_GET['start_date']) || !isset($_GET['end_dat
 }
 
 $totals = false;
-if( isset($_GET['totals'])){ $totals = true; }
+if( isset($_GET['totals'])){
+  if( $_GET['totals'] == 'sent'){
+    $totals = 'sent';
+  }elseif( $_GET['totals'] == 'received'){
+    $totals = 'received';
+  }
+}
 
 $divisor = 1;
 if( isset($_GET['divisor'])){
-  if( is_int($_GET['divisor'])){
+  if( is_numeric($_GET['divisor'])){
     if( $_GET['divisor'] > 0 && is_int($_GET['divisor'] / 10)){
-      $divisor = $_GET['divisor'];
+      $divisor = intval($_GET['divisor']);
     }
   }
 }
