@@ -90,4 +90,7 @@ assert(handle_traffic_volume_request('traffic-volume', 'l', '2016-02-03', '2016-
        array('l' => array('2016-02-03' => 4809988763, '2016-02-04' => 5136536322)));
 assert(handle_traffic_volume_request('traffic-volume', 'b', '2016-02-03', '2016-02-04', 10, 'sent') ===
        array('b' => array('2016-02-03' => 237999435, '2016-02-04' => 236101522)));
+assert(handle_traffic_volume_request('traffic-volume', 'a-m', '2020-06-01', '2016-06-31', 1, false) === false);
+
+
 ?>
