@@ -3,14 +3,24 @@ A web API for RSSAC002 data using the data collected
 [here](https://github.com/rssac-caucus/RSSAC002-data). This project is
 a work in progress and subject to change.
 
+It is currently hosted at rssac002.depht.com and a list of example queries can
+be viewed [here](http://rssac002.depht.com/tests.html). It will not
+be hosted here permanently.
+
+Example charts using the data can be viewed [here](http://rssac002.depht.com/charts.html).
+
 ## Entry Points
 There are five entry points for the API that receive HTTP GET requests
 and return time series output in JSON.
 
 `api/v1/load-time`
+
 `api/v1/rcode-volume`
+
 `api/v1/traffic-sizes`
+
 `api/v1/traffic-volume`
+
 `api/v1/unique-sources`
 
 ## Parameters
