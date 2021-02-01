@@ -2,6 +2,10 @@
 <?php
 /* Copyright Andrew McConachie <andrew@depht.com> 2021 */
 
+// Only allow execution via the CLI
+if( !php_sapi_name() == 'cli'){
+  exit();
+}
 require_once "lib.php";
 
 if ( !is_dir($RSSAC002_DATA_ROOT)){
