@@ -59,7 +59,7 @@ dns-udp-queries-received-ipv6 will be returned.
 `totals` defaults to `null`.
 
 #### divisor
-`divisor` may be set to an integer greater than zero and divisible
+`divisor` may be set to 1, or an integer greater than 1 and divisible
 by 10. All values returned are divided by `divisor`. This can be
 useful when dealing very large values.
 
