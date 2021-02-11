@@ -66,16 +66,15 @@ useful when dealing very large values.
 `divisor` defaults to 1.
 
 ## Returned Data
-Date is returned in JSON dictionary format per rsi per date. In some
+Data is returned in JSON dictionary format per rsi per date. In some
 cases the RSSAC002 data files cannot be read or are missing, in which
-case `null` will be returned for a given date. Programs using this
-data should be able to handle potential `null` values for any rsi and
-for any date.
+case `null` will be returned for a given value. Programs using this
+data should be able to handle potential `null` values for any value.
 
 ## prep_data.php
 `prep_data.php` must be run from the CLI prior to serving any data. It
 reads the RSSAC002 data files, parses their values into data structures, and then
-serializes to disk. Subsequent calls to the API then only have to read
+serializes these to disk. Subsequent calls to the API then only have to read
 the serialized data structures from disk.
 
 At the top of `lib.php` are the variables `$RSSAC002_DATA_ROOT` and
