@@ -34,11 +34,11 @@ A list of Root Server Identifiers(RSIs) to return data for.
 `m,c-k`
 
 #### start_date
-An incusive date in the form YYYY-MM-DD that marks the beginning of
+An inclusive date in the form YYYY-MM-DD that marks the beginning of
 the time series.
 
 #### end_date
-An incusive date in the form YYYY-MM-DD that marks the end of
+An inclusive date in the form YYYY-MM-DD that marks the end of
 the time series.
 
 ### traffic-volume
