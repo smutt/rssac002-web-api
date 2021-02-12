@@ -10,21 +10,27 @@ be hosted here permanently.
 Example charts using the data can be viewed [here](http://rssac002.depht.com/charts.html).
 
 ## Entry Points
-There are five entry points for the API that receive HTTP GET requests
+There are 8 entry points for the API that receive HTTP GET requests
 and return time series output in JSON.
 
 `api/v1/load-time`
 
 `api/v1/rcode-volume`
 
-`api/v1/traffic-sizes`
-
 `api/v1/traffic-volume`
 
 `api/v1/unique-sources`
 
+`api/v1/udp-request-sizes`
+
+`api/v1/udp-response-sizes`
+
+`api/v1/tcp-request-sizes`
+
+`api/v1/tcp-response-sizes`
+
 ## Parameters
-All five entry points take the following three parameters.
+All 8 entry points take the following three parameters.
 
 #### rsi
 A list of Root Server Identifiers(RSIs) to return data for.

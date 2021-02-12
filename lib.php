@@ -3,7 +3,8 @@
 
 // Globals
 $RSSAC002_DATA_ROOT = '../RSSAC002-data';
-$METRICS = ['rcode-volume', 'traffic-sizes', 'load-time', 'traffic-volume', 'unique-sources', 'zone-size'];
+$METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes',
+            'rcode-volume', 'load-time', 'traffic-volume', 'unique-sources', 'zone-size'];
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
 $YEARS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
 if( php_sapi_name() == 'cli'){
@@ -90,19 +91,48 @@ function parse_yaml_file(string $metric, string $contents) {
     }
     return $rv;
 
-  case "traffic-sizes":
-    $sizes = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes'];
-    foreach( $sizes as $size){
-      $rv[$size] = array();
+  case 'udp-request-sizes':
+    if( array_key_exists('udp-request-sizes', $yaml)){
+      if( is_array($yaml['udp-request-sizes'])){
+        foreach( $yaml['udp-request-sizes'] as $key => $val){
+          if( $val != 0){
+            $rv[$key] = $val;
+          }
+        }
+      }
     }
+    return $rv;
 
-    foreach( $sizes as $size){
-      if( array_key_exists($size, $yaml)){
-        if( is_array($yaml[$size])){
-          foreach( $yaml[$size] as $key => $val){
-            if( $val != 0){
-              $rv[$size][$key] = $val;
-            }
+  case 'udp-response-sizes':
+    if( array_key_exists('udp-response-sizes', $yaml)){
+      if( is_array($yaml['udp-response-sizes'])){
+        foreach( $yaml['udp-response-sizes'] as $key => $val){
+          if( $val != 0){
+            $rv[$key] = $val;
+          }
+        }
+      }
+    }
+    return $rv;
+
+  case 'tcp-request-sizes':
+    if( array_key_exists('tcp-request-sizes', $yaml)){
+      if( is_array($yaml['tcp-request-sizes'])){
+        foreach( $yaml['tcp-request-sizes'] as $key => $val){
+          if( $val != 0){
+            $rv[$key] = $val;
+          }
+        }
+      }
+    }
+    return $rv;
+
+  case 'tcp-response-sizes':
+    if( array_key_exists('tcp-response-sizes', $yaml)){
+      if( is_array($yaml['tcp-response-sizes'])){
+        foreach( $yaml['tcp-response-sizes'] as $key => $val){
+          if( $val != 0){
+            $rv[$key] = $val;
           }
         }
       }
