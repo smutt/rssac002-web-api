@@ -100,7 +100,9 @@ function parse_yaml_file(string $metric, string $contents) {
       if( array_key_exists($size, $yaml)){
         if( is_array($yaml[$size])){
           foreach( $yaml[$size] as $key => $val){
-            $rv[$size][$key] = $val;
+            if( $val != 0){
+              $rv[$size][$key] = $val;
+            }
           }
         }
       }
