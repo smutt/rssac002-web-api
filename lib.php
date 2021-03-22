@@ -1,6 +1,23 @@
 <?php
 /* Copyright Andrew McConachie <andrew@depht.com> 2021 */
 
+/*
+    This file is part of the rssac002-web-api.
+
+    The rssac002-web-api is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The rssac002-web-api is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with the rssac002-web-api.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 // Globals
 $RSSAC002_DATA_ROOT = '../RSSAC002-data';
 $METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes',
