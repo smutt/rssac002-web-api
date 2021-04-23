@@ -26,6 +26,20 @@ if( !isset($_GET['rsi']) || !isset($_GET['start_date']) || !isset($_GET['end_dat
   exit(1);
 }
 
+if( !check_dates($_GET['start_date'], $_GET['end_date'])){
+  http_response_code(400);
+  exit(1);
+}else{
+  $start_date = $_GET['start_date'];
+  $end_date = $_GET['end_date'];
+}
+
+$week = false;
+if( isset($_GET['week'])){
+  $week = true;
+  list($start_date, $end_date) = weekify_dates($start_date, $end_date);
+}
+
 $totals = false;
 if( isset($_GET['totals'])){
   if( $_GET['totals'] == 'sent'){

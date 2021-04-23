@@ -239,24 +239,37 @@ function parse_letters(string $input){
   return $rv;
 }
 
-// Get all dates between passed start and end dates
-function parse_dates(string $start_input, string $end_input){
-  // Check input
-  if( strlen($start_input) > 10 || strlen($end_input) > 10) { return false; }
-  if( preg_replace("/[0-9\-]+/", "", $start_input) !== ""){ return false; }
-  if( preg_replace("/[0-9\-]+/", "", $end_input) !== ""){ return false; }
-  $start = date_parse_from_format("Y-m-d", $start_input);
-  $end = date_parse_from_format("Y-m-d", $end_input);
-  if( !checkdate($start['month'], $start['day'], $start['year'])) { return false; }
-  if( !checkdate($end['month'], $end['day'], $end['year'])){ return false; }
+// Checks if passed strings are valid dates and if $start comes before $end
+// Returns true if they are, otherwise false
+function check_dates(string $start, string $end){
+  if( strlen($start) > 10 || strlen($end) > 10) { return false; }
+  if( preg_replace("/[0-9\-]+/", "", $start) !== ""){ return false; }
+  if( preg_replace("/[0-9\-]+/", "", $end) !== ""){ return false; }
+  $start_date = date_parse_from_format("Y-m-d", $start);
+  $end_date = date_parse_from_format("Y-m-d", $end);
+  if( !checkdate($start_date['month'], $start_date['day'], $start_date['year'])) { return false; }
+  if( !checkdate($end_date['month'], $end_date['day'], $end_date['year'])){ return false; }
 
-  $start = DateTime::createFromFormat("Y-m-d", $start_input);
-  $end = DateTime::createFromFormat("Y-m-d", $end_input);
-  if( $start > $end){ return false; }
+  $start_date = DateTime::createFromFormat("Y-m-d", $start);
+  $end_date = DateTime::createFromFormat("Y-m-d", $end);
+  if( $start_date > $end_date){ return false; }
+
+  return true;
+}
+
+// Return all dates between passed $start and $end dates
+// Returns false if dates are bad
+function parse_dates(string $start, string $end){
+  if( !check_dates($start, $end)){
+    return false;
+  }
+
   $interval = new DateInterval("P1D"); // 1 day
   $rv = array();
 
-  $current_day = $start;
+  $start_date = DateTime::createFromFormat("Y-m-d", $start);
+  $end_date = DateTime::createFromFormat("Y-m-d", $end);
+  $current_day = $start_date;
   do{
     $current_year = $current_day->format('Y');
     if( !array_key_exists($current_year, $rv)){
@@ -264,10 +277,66 @@ function parse_dates(string $start_input, string $end_input){
     }
     array_push($rv[$current_year], $current_day->format('Y-m-d'));
     $current_day->add($interval);
-  }while($current_day <= $end);
+  }while($current_day <= $end_date);
 
   return $rv;
 }
+
+// Adjust $start and $end so they start and end on a Monday and Sunday respectively
+// Returns false if dates are bad
+// Returns start date of Monday immediately before $start
+// Returns end date of Sunday immediately after $end
+function weekify_dates(string $start, string $end){
+  if( !check_dates($start, $end)){
+      return false;
+  }
+
+  $interval = new DateInterval("P1D"); // 1 day
+  $start_date = DateTime::createFromFormat("Y-m-d", $start);
+  $end_date = DateTime::createFromFormat("Y-m-d", $end);
+
+  while(intval($start_date->format('N')) > 1){
+    $start_date->sub($interval);
+  }
+
+  while(intval($end_date->format('N')) < 7){
+    $end_date->add($interval);
+  }
+
+  return compact($start_date, $end_date);
+}
+
+// Takes day based metrics and returns week based metrics
+/*
+function weekify_output($metrics){
+  // Check if dates are weekified
+  $start_date = DateTime::createFromFormat("Y-m-d", array_key_first($metrics[0]));
+  $end_date = DateTime::createFromFormat("Y-m-d", array_key_last($metrics[0]));
+  if( $start_date->format('N') != '1' || $end_date->format('N') != '7'){
+    return false; // This should never happen
+  }
+
+  $rv = array();
+  foreach( $metrics as $rsi){
+    rv[$rsi] = array();
+    while(count($rsi) > 0){
+      if( is_array($rsi[0])){
+        $tmp = array();
+      }else{
+        $tmp = 0;
+      }
+      for($ii = 0; $ii <= 7; $ii++){
+
+
+      }
+
+    }
+
+
+  }
+  return $rv;
+}
+*/
 
 function get_metrics_by_date(string $metric, string $letters, string $start_date, string $end_date){
   global $METRICS;

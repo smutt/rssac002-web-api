@@ -21,7 +21,7 @@
 require_once "../../lib.php";
 require_once "../../check_input.php";
 
-$raw_metrics = get_metrics_by_date('udp-response-sizes', $_GET['rsi'], $_GET['start_date'], $_GET['end_date']);
+$raw_metrics = get_metrics_by_date('udp-response-sizes', $_GET['rsi'], $start_date, $end_date);
 if( $raw_metrics === false){
   http_response_code(400);
   exit(1);
