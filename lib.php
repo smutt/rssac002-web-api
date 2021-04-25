@@ -303,40 +303,53 @@ function weekify_dates(string $start, string $end){
     $end_date->add($interval);
   }
 
-  return compact($start_date, $end_date);
+  return array($start_date->format("Y-m-d"), $end_date->format("Y-m-d"));
 }
 
 // Takes day based metrics and returns week based metrics
-/*
 function weekify_output($metrics){
   // Check if dates are weekified
-  $start_date = DateTime::createFromFormat("Y-m-d", array_key_first($metrics[0]));
-  $end_date = DateTime::createFromFormat("Y-m-d", array_key_last($metrics[0]));
+  $start_date = DateTime::createFromFormat("Y-m-d", array_key_first(array_values($metrics)[0]));
+  $end_date = DateTime::createFromFormat("Y-m-d", array_key_last(array_values($metrics)[0]));
   if( $start_date->format('N') != '1' || $end_date->format('N') != '7'){
     return false; // This should never happen
   }
 
   $rv = array();
-  foreach( $metrics as $rsi){
-    rv[$rsi] = array();
-    while(count($rsi) > 0){
-      if( is_array($rsi[0])){
+  foreach( $metrics as $rsi => $dates){
+    $rv[$rsi] = array();
+    while(count($dates) > 0){
+      $monday = DateTime::createFromFormat("Y-m-d", array_key_first($dates));
+      $week = $monday->format('Y-W');
+
+      if( is_array(array_values($dates)[0])){
         $tmp = array();
+        foreach(array_values($dates)[0] as $k => $v){
+          $tmp[$k] = 0;
+        }
       }else{
         $tmp = 0;
       }
-      for($ii = 0; $ii <= 7; $ii++){
 
+      for($ii = 0; $ii < 7; $ii++){
+        $today = array_shift($dates);
+        if( $today === null){
+          continue;
+        }
 
+        if( is_array($today)){
+          foreach($today as $k => $v){
+            $tmp[$k] += $v;
+          }
+        }else{
+          $tmp += $today;
+        }
       }
-
+      $rv[$rsi][$week] = $tmp;
     }
-
-
   }
   return $rv;
 }
-*/
 
 function get_metrics_by_date(string $metric, string $letters, string $start_date, string $end_date){
   global $METRICS;
