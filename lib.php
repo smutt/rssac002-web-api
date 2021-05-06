@@ -317,32 +317,51 @@ function weekify_output($metrics){
 
   $rv = array();
   foreach( $metrics as $rsi => $dates){
+    if(count($dates) % 7 != 0){
+      return false; // This should never happen
+    }
+
     $rv[$rsi] = array();
     while(count($dates) > 0){
       $monday = DateTime::createFromFormat("Y-m-d", array_key_first($dates));
-      $week = $monday->format('Y-W');
+      $week = $monday->add(new DateInterval("P3D"))->format('Y-W');  // Thursday of an ISO8601 week is always in the correct year
 
-      if( is_array(array_values($dates)[0])){
-        $tmp = array();
-        foreach(array_values($dates)[0] as $k => $v){
-          $tmp[$k] = 0;
-        }
-      }else{
-        $tmp = 0;
-      }
-
+      // Build $week_data and determine if any days are arrays
+      // If any day of the week is an array, $tmp becomes an array
+      $tmp = 0;
+      $week_data = array();
       for($ii = 0; $ii < 7; $ii++){
         $today = array_shift($dates);
+        if( is_array($today)){
+          array_push($week_data, $today);
+          $tmp = array();
+          foreach(array_keys($today) as $key){
+            $tmp[$key] = 0;
+          }
+        }else{
+          array_push($week_data, $today);
+        }
+      }
+
+      foreach($week_data as $today){
         if( $today === null){
           continue;
         }
 
         if( is_array($today)){
-          foreach($today as $k => $v){
-            $tmp[$k] += $v;
+          if( is_array($tmp)){
+            foreach(array_intersect_key($today, $tmp) as $k => $v){
+              $tmp[$k] += $v;
+            }
+          }else{
+            continue; // This should never happen
           }
         }else{
-          $tmp += $today;
+          if( is_array($tmp)){
+            continue;
+          }else{
+            $tmp += $today;
+          }
         }
       }
       $rv[$rsi][$week] = $tmp;
