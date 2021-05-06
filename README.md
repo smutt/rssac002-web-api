@@ -74,6 +74,24 @@ cases the RSSAC002 data files cannot be read or are missing, in which
 case `null` will be returned for a given value. Programs using this
 data should be able to handle potential `null` values for any value.
 
+If a Javascript program is going to be using this data, a function like the following may be useful.
+`
+// Summation function for dirty data
+// Treat null as zero and ignore non-numbers
+function sum_vals(){
+  var rv = 0;
+  for(var ii = 0; ii < arguments.length; ii++){
+    if(arguments[ii] != null){
+      if(typeof(arguments[ii]) == 'number'){
+        rv += arguments[ii];
+      }
+    }
+  }
+  return rv;
+}
+`
+
+
 ## prep_data.php
 `prep_data.php` must be run from the CLI prior to serving any data. It
 reads the RSSAC002 data files, parses their values into data structures, and then
