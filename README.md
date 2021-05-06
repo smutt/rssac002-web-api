@@ -68,6 +68,15 @@ useful when dealing very large values.
 
 `divisor` defaults to 1.
 
+#### week
+`week` may be set or not set. If set, data is returned per ISO 8601
+week instead of per date. The first week is the week
+containing `start_date`, and the last week is the week containing
+`end_date`. The values for each date in a week are summed together. If
+the value for a date is `null`, a value of `0` is used instead.
+
+`week` defaults to `null`.
+
 ## Returned Data
 Data is returned in JSON dictionary format per rsi per date. In some
 cases the RSSAC002 data files cannot be read or are missing, in which
