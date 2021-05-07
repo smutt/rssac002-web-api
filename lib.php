@@ -334,7 +334,9 @@ function weekify_output($metrics){
         $today = array_shift($dates);
         if( is_array($today)){
           array_push($week_data, $today);
-          $tmp = array();
+          if( !is_array($tmp)){
+            $tmp = array();
+          }
           foreach(array_keys($today) as $key){
             $tmp[$key] = 0;
           }
