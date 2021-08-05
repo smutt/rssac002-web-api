@@ -10,7 +10,7 @@ server "rssac002.depht.com" {
 	}
 
 	location "/*" {
-		root "/htdocs/rssac002.depht.com/www-home" 
+		root "/htdocs/rssac002.depht.com/rssac002-charts/site" 
 	}
 }
 
