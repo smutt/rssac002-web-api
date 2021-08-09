@@ -25,9 +25,9 @@ $METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
 $YEARS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
 if( php_sapi_name() == 'cli'){
-  $SERIALIZED_ROOT = '../serialized';
+  $SERIALIZED_ROOT = 'serialized';
 }else{
-  $SERIALIZED_ROOT = '/htdocs/rssac002.depht.com/serialized';
+  $SERIALIZED_ROOT = __DIR__ . '/serialized';
 }
 
 // Writes a serialized version of passed $data to $fname
