@@ -48,11 +48,23 @@ function write_serialized_file(string $fname, &$data){
   }
 }
 
+// Perform final value checking on values read from YAML
+// Takes a potentially dirty value, returns a clean value, or NULL
+function clean_value($val){
+  if(! is_numeric($val)){
+    return NULL;
+  }
+  if($val <= 0){
+    return 0;
+  }
+  return floor($val);
+}
+
 // Either return the value at $arr[$key] or return NULL
 function get_value(&$arr, $key) {
   if( array_key_exists($key, $arr)){
     if (strlen($arr[$key]) > 0){
-      return $arr[$key];
+      return clean_value($arr[$key]);
     }
   }
   print("\nFound NULL for " . $key);
@@ -75,7 +87,7 @@ function parse_yaml_file(string $metric, string $contents) {
         if( count($yaml["time"]) > 0){
           $rv = array();
           foreach($yaml["time"] as $key => $val){
-            $rv[$key] = $val;
+            $rv[$key] = clean_value($val);
           }
           return $rv;
         }
@@ -92,7 +104,7 @@ function parse_yaml_file(string $metric, string $contents) {
           foreach( $val as $rcode => $count){
             if( is_numeric($rcode)){
               if( $rcode >= 0 && $rcode <= 23){
-                $rv[$rcode] = $count;
+                $rv[$rcode] = clean_value($count);
               }
             }
           }
@@ -102,7 +114,7 @@ function parse_yaml_file(string $metric, string $contents) {
 
       if( is_numeric($key)){
         if( $key >= 0 && $key <= 23){
-          $rv[$key] = $val;
+          $rv[$key] = clean_value($val);
         }
       }
     }
@@ -113,7 +125,7 @@ function parse_yaml_file(string $metric, string $contents) {
       if( is_array($yaml['udp-request-sizes'])){
         foreach( $yaml['udp-request-sizes'] as $key => $val){
           if( $val != 0){
-            $rv[$key] = $val;
+            $rv[$key] = clean_value($val);
           }
         }
       }
@@ -125,7 +137,7 @@ function parse_yaml_file(string $metric, string $contents) {
       if( is_array($yaml['udp-response-sizes'])){
         foreach( $yaml['udp-response-sizes'] as $key => $val){
           if( $val != 0){
-            $rv[$key] = $val;
+            $rv[$key] = clean_value($val);
           }
         }
       }
@@ -137,7 +149,7 @@ function parse_yaml_file(string $metric, string $contents) {
       if( is_array($yaml['tcp-request-sizes'])){
         foreach( $yaml['tcp-request-sizes'] as $key => $val){
           if( $val != 0){
-            $rv[$key] = $val;
+            $rv[$key] = clean_value($val);
           }
         }
       }
@@ -149,7 +161,7 @@ function parse_yaml_file(string $metric, string $contents) {
       if( is_array($yaml['tcp-response-sizes'])){
         foreach( $yaml['tcp-response-sizes'] as $key => $val){
           if( $val != 0){
-            $rv[$key] = $val;
+            $rv[$key] = clean_value($val);
           }
         }
       }
@@ -166,7 +178,7 @@ function parse_yaml_file(string $metric, string $contents) {
     if( array_key_exists("size", $yaml)){
       if( is_array($yaml["size"])){
         foreach($yaml["size"] as $key => $val){
-          $rv[$key] = $val;
+          $rv[$key] = clean_value($val);
         }
         return $rv;
       }
