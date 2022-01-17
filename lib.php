@@ -23,7 +23,11 @@ $RSSAC002_DATA_ROOT = '../RSSAC002-data';
 $METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes',
             'rcode-volume', 'load-time', 'traffic-volume', 'unique-sources', 'zone-size'];
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
-$YEARS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
+$YEARS = array();
+for($ii = 2013; $ii <= date("Y"); $ii++){
+  array_push($YEARS, strval($ii));
+}
+
 if( php_sapi_name() == 'cli'){
   $SERIALIZED_ROOT = 'serialized';
 }else{
