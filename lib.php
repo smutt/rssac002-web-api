@@ -77,7 +77,7 @@ function get_value(&$arr, $key) {
 
 // Parses RSSAC002 YAML file and returns the stuff we care about
 // Will either return an array or false on error
-function parse_yaml_file(string $metric, string $contents) {
+function parse_rssac002_yaml_file(string $metric, string $contents) {
   $rv = array();
   $yaml = yaml_parse($contents);
   if( $yaml === false){

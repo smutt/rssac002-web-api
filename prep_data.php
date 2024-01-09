@@ -91,7 +91,7 @@ foreach( $METRICS as $metric){
               if( is_readable($yaml_file)) {
                 $day = explode("-", $ff)[2];
                 if( strpos($day, $year) === 0){
-                  $day_data = parse_yaml_file($metric, file_get_contents($yaml_file));
+                  $day_data = parse_rssac002_yaml_file($metric, file_get_contents($yaml_file));
                   if( $day_data === false){
                     print("\nError parsing YAML file" . $yaml_file);
                   }else{
