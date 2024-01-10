@@ -1,6 +1,6 @@
 # rssac002-web-api
-A web API for RSSAC002 and instance data. For RSSAC002 it uses the data collected [here](https://github.com/rssac-caucus/RSSAC002-data).
-For instance data it uses the data available [here[(https://root-servers.org/archives/).
+A web API for RSSAC002 and RSS instance data. For RSSAC002 it uses the data collected [here](https://github.com/rssac-caucus/RSSAC002-data).
+For RSS instance data it uses the data available [here](https://root-servers.org/archives/).
 
 It is currently used by the charts hosted [here](https://rssac002.root-servers.org).
 
@@ -28,7 +28,7 @@ There are 10 entry points for the API that can receive HTTP GET requests and wil
 `api/v1/instances-detail`
 
 ## Parameters
-All 8 entry points take the following four parameters: rsi, start_date, end_date, and week.
+All entry points take the following four parameters: rsi, start_date, end_date, and week.
 
 #### rsi
 A list of Root Server Identifiers(RSIs) to return data for.
