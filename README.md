@@ -49,9 +49,7 @@ An inclusive date in the form YYYY-MM-DD that marks the end of the time series.
 
 For RSSAC002 data the values for each date in a week are summed together. If the value for a date is `null`, a value of `0` is used instead.
 
-For `instance-count` setting `week` will return the maximum whole number for that week. (not implemented)
-
-For `instance-detail` setting `week` has no effect. (not implemented)
+For `instance-detail` setting `week` has no effect.
 
 `week` defaults to `null`.
 
@@ -89,7 +87,6 @@ function sum_vals(){
   return rv;
 }
 ```
-
 
 ## prep_data.php
 `prep_data.php` must be run from the CLI prior to serving any data. It reads the RSSAC002 and instance data files, parses their values into data structures, and then
