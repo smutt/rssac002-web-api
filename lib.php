@@ -21,14 +21,13 @@
 // Globals
 $RSSAC002_DATA_ROOT = '../RSSAC002-data';
 $INSTANCE_DATA_ROOT = '../instance-data/archives';
-//$METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes', 'rcode-volume',
-//  'load-time', 'traffic-volume', 'unique-sources', 'zone-size'];
-$METRICS = ['instances-count', 'instances-detail'];
+$METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes', 'rcode-volume',
+            'load-time', 'traffic-volume', 'unique-sources', 'zone-size', 'instances-count', 'instances-detail'];
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
+
 $RSSAC002_START_YEAR = '2013'; // We have no RSSAC002 data before 2013
 $INSTANCE_START_YEAR = '2015'; 
 $INSTANCE_START_DATE = '2015-03-02'; // Our first instance data is from 2015-03-02
-$INSTANCE_FORMAT_CHANGE_DATE = '2020-09-16'; // Format of YAML changes on this date
 
 if( php_sapi_name() == 'cli'){
   $SERIALIZED_ROOT = 'serialized';

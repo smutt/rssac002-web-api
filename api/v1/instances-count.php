@@ -20,7 +20,6 @@
 
 require_once "../../lib.php";
 require_once "../../check_input.php";
-error_reporting(E_ALL);
 
 $raw_metrics = get_metrics_by_date('instances-count', $_GET['rsi'], $start_date, $end_date);
 if( $raw_metrics === false){
