@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-/* Copyright Andrew McConachie <andrew@depht.com> 2021 */
+/* Copyright Andrew McConachie <andrew@depht.com> 2021, 2024 */
 
 /*
     This file is part of the rssac002-web-api.
@@ -27,6 +27,11 @@ require_once "lib.php";
 
 if( !is_dir($RSSAC002_DATA_ROOT)){
   error_log('Bad RSSAC002 root dir');
+  exit(1);
+}
+
+if( !is_dir($INSTANCE_DATA_ROOT)){
+  error_log('Bad instance root dir');
   exit(1);
 }
 
@@ -69,50 +74,91 @@ foreach($METRICS as $metric){
 }
 
 foreach( $METRICS as $metric){
-  // Handle traffic-sizes special case
-  if(in_array($metric, array('udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes'))){
-    $metric_file = 'traffic-sizes';
-  }else{
-    $metric_file = $metric;
-  }
+  print("\nSerializing " . $metric);
 
-  foreach( $RSIS as $rsi){
-    print("\nProcessing " . $metric . " for " . $rsi);
-    foreach( $YEARS as $year){
-      $data = array();
-      $year_dir = $RSSAC002_DATA_ROOT . "/" . $year;
-      foreach( scandir($year_dir) as $month) {
-        $month_dir = $year_dir . "/" . $month;
-        if( in_array($metric_file, scandir($month_dir))){
-          $metric_dir = $month_dir . "/" . $metric_file;
-          foreach( scandir($metric_dir) as $ff){
-            if( strpos($ff, $rsi) === 0){
-              $yaml_file = $metric_dir . "/" . $ff;
-              if( is_readable($yaml_file)) {
-                $day = explode("-", $ff)[2];
-                if( strpos($day, $year) === 0){
-                  $day_data = parse_rssac002_yaml_file($metric, file_get_contents($yaml_file));
-                  if( $day_data === false){
-                    print("\nError parsing YAML file" . $yaml_file);
+  if(in_array($metric, array('instances-count', 'instances-detail'))){ // Handle instance metrics
+    foreach( $RSIS as $rsi){
+      print("\nProcessing " . $metric . " for " . $rsi);
+      for($year = $INSTANCE_START_YEAR; $year <= date("Y"); $year++){
+        $data = array();
+        $dates = parse_dates($year . '-01-01', $year . '-12-31')[$year];
+        foreach($dates as $day){
+          if( DateTime::createFromFormat('Y-m-d', $day) < DateTime::createFromFormat('Y-m-d', $INSTANCE_START_DATE)){
+            continue;
+          }
+          if( DateTime::createFromFormat('Y-m-d', $day) > DateTime::createFromFormat('Y-m-d', date('Y-m-d'))){
+            continue;
+          }
+          $left_yaml_file = $INSTANCE_DATA_ROOT . '/' . $day . '/' . $rsi . '-root';
+          if( is_readable($left_yaml_file . '.yml')){
+            $yaml_file = $left_yaml_file . '.yml';
+          }elseif( is_readable($left_yaml_file . '.yaml')){
+            $yaml_file = $left_yaml_file . '.yaml';
+          }else{
+            print("\nNo readable file for " . $day . " " . $rsi);
+            continue;
+          }
+          $day_data = parse_yaml_file($metric, file_get_contents($yaml_file));
+          if( $day_data === false){
+            print("\nError parsing YAML file" . $yaml_file);
+          }else{
+            $data[$day] = $day_data;
+          }
+        }
+        $fname = $SERIALIZED_ROOT . "/" . $metric . "/" . $rsi . "/" . $year . ".ser";
+        write_serialized_file($fname, $data);
+      }
+    }
+
+  }else{ // Handle RSSAC002 metrics
+    // Handle traffic-sizes special case
+    if(in_array($metric, array('udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes'))){
+      $metric_file = 'traffic-sizes';
+    }else{
+      $metric_file = $metric;
+    }
+
+    foreach( $RSIS as $rsi){
+      print("\nProcessing " . $metric . " for " . $rsi);
+      for($year = $RSSAC002_START_YEAR; $year <= date("Y"); $year++){
+        $data = array();
+        $year_dir = $RSSAC002_DATA_ROOT . "/" . $year;
+        foreach( scandir($year_dir) as $month) {
+          $month_dir = $year_dir . "/" . $month;
+          if( in_array($metric_file, scandir($month_dir))){
+            $metric_dir = $month_dir . "/" . $metric_file;
+            foreach( scandir($metric_dir) as $ff){
+              if( strpos($ff, $rsi) === 0){
+                $yaml_file = $metric_dir . "/" . $ff;
+                if( is_readable($yaml_file)) {
+                  $day = explode("-", $ff)[2];
+                  if( strpos($day, $year) === 0){
+                    $day_data = parse_yaml_file($metric, file_get_contents($yaml_file));
+                    if( $day_data === false){
+                      print("\nError parsing YAML file" . $yaml_file);
+                    }else{
+                      $dtime = DateTime::createFromFormat("Ymd", $day);
+                      $data[$dtime->format('Y-m-d')] = $day_data;
+                    }
                   }else{
-                    $dtime = DateTime::createFromFormat("Ymd", $day);
-                    $data[$dtime->format('Y-m-d')] = $day_data;
+                    print("\nBad date in file format " . $yaml_file);
                   }
                 }else{
-                  print("\nBad date in file format " . $yaml_file);
+                  print("\nUnable to read file " . $yaml_file);
                 }
-              }else{
-                print("\nUnable to read file " . $yaml_file);
               }
             }
           }
         }
+        $fname = $SERIALIZED_ROOT . "/" . $metric . "/" . $rsi . "/" . $year . ".ser";
+        write_serialized_file($fname, $data);
       }
-    $fname = $SERIALIZED_ROOT . "/" . $metric . "/" . $rsi . "/" . $year . ".ser";
-    write_serialized_file($fname, $data);
     }
   }
 }
+
+
+
 
 print("\nFinshed\n");
 ?>

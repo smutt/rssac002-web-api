@@ -1,5 +1,5 @@
 <?php
-/* Copyright Andrew McConachie <andrew@depht.com> 2021 */
+/* Copyright Andrew McConachie <andrew@depht.com> 2021, 2024 */
 
 /*
     This file is part of the rssac002-web-api.
@@ -20,13 +20,15 @@
 
 // Globals
 $RSSAC002_DATA_ROOT = '../RSSAC002-data';
-$METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes',
-            'rcode-volume', 'load-time', 'traffic-volume', 'unique-sources', 'zone-size'];
+$INSTANCE_DATA_ROOT = '../instance-data/archives';
+//$METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes', 'rcode-volume',
+//  'load-time', 'traffic-volume', 'unique-sources', 'zone-size'];
+$METRICS = ['instances-count', 'instances-detail'];
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
-$YEARS = array();
-for($ii = 2013; $ii <= date("Y"); $ii++){
-  array_push($YEARS, strval($ii));
-}
+$RSSAC002_START_YEAR = '2013'; // We have no RSSAC002 data before 2013
+$INSTANCE_START_YEAR = '2015'; 
+$INSTANCE_START_DATE = '2015-03-02'; // Our first instance data is from 2015-03-02
+$INSTANCE_FORMAT_CHANGE_DATE = '2020-09-16'; // Format of YAML changes on this date
 
 if( php_sapi_name() == 'cli'){
   $SERIALIZED_ROOT = 'serialized';
@@ -52,9 +54,39 @@ function write_serialized_file(string $fname, &$data){
   }
 }
 
-// Perform final value checking on values read from YAML
-// Takes a potentially dirty value, returns a clean value, or NULL
-function clean_value($val){
+// Perform final value checking on boolean values read from YAML
+// Takes a potentially dirty value, returns a clean boolean value or NULL
+function clean_bool_value($val){
+  if( is_bool($val)){
+    return $val;
+  }
+  if(! is_string($val)){
+    return NULL;
+  }
+  $clean = strtolower(trim($val));
+  if( strpos($clean, 'yes') == 0 || strpos($clean, 'true')){
+    return true;
+  }elseif( strpos($clean, 'no') == 0 || strpos($clean, 'false')){
+    return false;
+  }
+  return NULL;
+}
+
+// Perform final value checking on float values read from YAML
+// Takes a potentially dirty value, returns a clean float value or NULL
+function clean_float_value($val){
+  if(! is_numeric($val)){
+    return NULL;
+  }
+  if( is_float(floatval($val))){
+    return floatval($val);
+  }
+  return NULL;
+}
+
+// Perform final value checking on whole number values read from YAML
+// Takes a potentially dirty value, returns a clean whole number or NULL
+function clean_whole_value($val){
   if(! is_numeric($val)){
     return NULL;
   }
@@ -64,11 +96,11 @@ function clean_value($val){
   return floor($val);
 }
 
-// Either return the value at $arr[$key] or return NULL
-function get_value(&$arr, $key) {
+// Either return the integer value at $arr[$key] or return NULL
+function get_whole_value(&$arr, $key) {
   if( array_key_exists($key, $arr)){
     if (strlen($arr[$key]) > 0){
-      return clean_value($arr[$key]);
+      return clean_whole_value($arr[$key]);
     }
   }
   print("\nFound NULL for " . $key);
@@ -77,7 +109,7 @@ function get_value(&$arr, $key) {
 
 // Parses RSSAC002 YAML file and returns the stuff we care about
 // Will either return an array or false on error
-function parse_rssac002_yaml_file(string $metric, string $contents) {
+function parse_yaml_file(string $metric, string $contents) {
   $rv = array();
   $yaml = yaml_parse($contents);
   if( $yaml === false){
@@ -91,7 +123,7 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
         if( count($yaml["time"]) > 0){
           $rv = array();
           foreach($yaml["time"] as $key => $val){
-            $rv[$key] = clean_value($val);
+            $rv[$key] = clean_whole_value($val);
           }
           return $rv;
         }
@@ -108,7 +140,7 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
           foreach( $val as $rcode => $count){
             if( is_numeric($rcode)){
               if( $rcode >= 0 && $rcode <= 23){
-                $rv[$rcode] = clean_value($count);
+                $rv[$rcode] = clean_whole_value($count);
               }
             }
           }
@@ -118,7 +150,7 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
 
       if( is_numeric($key)){
         if( $key >= 0 && $key <= 23){
-          $rv[$key] = clean_value($val);
+          $rv[$key] = clean_whole_value($val);
         }
       }
     }
@@ -129,7 +161,7 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
       if( is_array($yaml['udp-request-sizes'])){
         foreach( $yaml['udp-request-sizes'] as $key => $val){
           if( $val != 0){
-            $rv[$key] = clean_value($val);
+            $rv[$key] = clean_whole_value($val);
           }
         }
       }
@@ -141,7 +173,7 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
       if( is_array($yaml['udp-response-sizes'])){
         foreach( $yaml['udp-response-sizes'] as $key => $val){
           if( $val != 0){
-            $rv[$key] = clean_value($val);
+            $rv[$key] = clean_whole_value($val);
           }
         }
       }
@@ -153,7 +185,7 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
       if( is_array($yaml['tcp-request-sizes'])){
         foreach( $yaml['tcp-request-sizes'] as $key => $val){
           if( $val != 0){
-            $rv[$key] = clean_value($val);
+            $rv[$key] = clean_whole_value($val);
           }
         }
       }
@@ -165,7 +197,7 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
       if( is_array($yaml['tcp-response-sizes'])){
         foreach( $yaml['tcp-response-sizes'] as $key => $val){
           if( $val != 0){
-            $rv[$key] = clean_value($val);
+            $rv[$key] = clean_whole_value($val);
           }
         }
       }
@@ -173,16 +205,16 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
     return $rv;
 
   case "unique-sources":
-    $rv["num-sources-ipv4"] = get_value($yaml, "num-sources-ipv4");
-    $rv["num-sources-ipv6"] = get_value($yaml, "num-sources-ipv6");
-    $rv["num-sources-ipv6-aggregate"] = get_value($yaml, "num-sources-ipv6-aggregate");
+    $rv["num-sources-ipv4"] = get_whole_value($yaml, "num-sources-ipv4");
+    $rv["num-sources-ipv6"] = get_whole_value($yaml, "num-sources-ipv6");
+    $rv["num-sources-ipv6-aggregate"] = get_whole_value($yaml, "num-sources-ipv6-aggregate");
     return $rv;
 
-  case "zone-size":
+  case "zone-size": 
     if( array_key_exists("size", $yaml)){
       if( is_array($yaml["size"])){
         foreach($yaml["size"] as $key => $val){
-          $rv[$key] = clean_value($val);
+          $rv[$key] = clean_whole_value($val);
         }
         return $rv;
       }
@@ -190,14 +222,71 @@ function parse_rssac002_yaml_file(string $metric, string $contents) {
     return false;
 
   case "traffic-volume":
-    $rv["dns-udp-queries-received-ipv4"] = get_value($yaml, "dns-udp-queries-received-ipv4");
-    $rv["dns-udp-queries-received-ipv6"] = get_value($yaml, "dns-udp-queries-received-ipv6");
-    $rv["dns-tcp-queries-received-ipv4"] = get_value($yaml, "dns-tcp-queries-received-ipv4");
-    $rv["dns-tcp-queries-received-ipv6"] = get_value($yaml, "dns-tcp-queries-received-ipv6");
-    $rv["dns-udp-responses-sent-ipv4"] = get_value($yaml, "dns-udp-responses-sent-ipv4");
-    $rv["dns-udp-responses-sent-ipv6"] = get_value($yaml, "dns-udp-responses-sent-ipv6");
-    $rv["dns-tcp-responses-sent-ipv4"] = get_value($yaml, "dns-tcp-responses-sent-ipv4");
-    $rv["dns-tcp-responses-sent-ipv6"] = get_value($yaml, "dns-tcp-responses-sent-ipv6");
+    $rv["dns-udp-queries-received-ipv4"] = get_whole_value($yaml, "dns-udp-queries-received-ipv4");
+    $rv["dns-udp-queries-received-ipv6"] = get_whole_value($yaml, "dns-udp-queries-received-ipv6");
+    $rv["dns-tcp-queries-received-ipv4"] = get_whole_value($yaml, "dns-tcp-queries-received-ipv4");
+    $rv["dns-tcp-queries-received-ipv6"] = get_whole_value($yaml, "dns-tcp-queries-received-ipv6");
+    $rv["dns-udp-responses-sent-ipv4"] = get_whole_value($yaml, "dns-udp-responses-sent-ipv4");
+    $rv["dns-udp-responses-sent-ipv6"] = get_whole_value($yaml, "dns-udp-responses-sent-ipv6");
+    $rv["dns-tcp-responses-sent-ipv4"] = get_whole_value($yaml, "dns-tcp-responses-sent-ipv4");
+    $rv["dns-tcp-responses-sent-ipv6"] = get_whole_value($yaml, "dns-tcp-responses-sent-ipv6");
+    return $rv;
+
+  case "instances-count":
+    $rv['instances-count'] = 0;
+    if( array_key_exists('Instances', $yaml)){
+      $top_key = 'Instances';
+      $second_key = 'Sites';
+    }elseif( array_key_exists('Sites', $yaml)){
+      $top_key = 'Sites';
+      $second_key = 'Instances';
+    }else{
+      return false;
+    }
+
+    if( is_array($yaml[$top_key])){
+      foreach( $yaml[$top_key] as $location){
+        $rv['instances-count'] += clean_whole_value($location[$second_key]);
+      }
+    }else{
+      return false;
+    }
+    return $rv;
+
+  case "instances-detail":
+    $rv['instances-detail'] = array();
+    if( array_key_exists('Instances', $yaml)){
+      $top_key = 'Instances';
+      $second_key = 'Sites';
+    }elseif( array_key_exists('Sites', $yaml)){
+      $top_key = 'Sites';
+      $second_key = 'Instances';
+    }else{
+      return false;
+    }
+
+    if( is_array($yaml[$top_key])){
+      foreach( $yaml[$top_key] as $location){
+        for($ii = 0; $ii < clean_whole_value($location[$second_key]); $ii++){
+          $loc = array();
+          if( array_key_exists('IPv4', $location)){
+            $loc['IPv4'] = clean_bool_value($location['IPv4']);
+          }
+          if( array_key_exists('IPv6', $location)){
+            $loc['IPv6'] = clean_bool_value($location['IPv6']);
+          }
+          if( array_key_exists('Latitude', $location)){
+            $loc['Latitude'] = clean_float_value($location['Latitude']);
+          }
+          if( array_key_exists('Longitude', $location)){
+            $loc['Longitude'] = clean_float_value($location['Longitude']);
+          }
+          array_push($rv['instances-detail'], $loc);
+        }
+      }
+    }else{
+      return false;
+    }
     return $rv;
   }
 }

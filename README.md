@@ -31,7 +31,7 @@ There are 10 entry points for the API that can receive HTTP GET requests and wil
 All entry points take the following four parameters: rsi, start_date, end_date, and week.
 
 #### rsi
-A list of Root Server Identifiers(RSIs) to return data for.
+A list of Root Server Identifiers(RSIs) to return data for. The `-` and `,` characters are special delimiters.
 ##### Examples:
 `a-m`
 `a,b,m,f`
@@ -45,8 +45,13 @@ An inclusive date in the form YYYY-MM-DD that marks the end of the time series.
 
 #### week
 `week` may be set or not set. If set, data is returned per ISO 8601 week instead of per date. The first week is the week
-  containing `start_date`, and the last week is the week containing `end_date`. The values for each date in a week are summed together. If
-the value for a date is `null`, a value of `0` is used instead.
+  containing `start_date`, and the last week is the week containing `end_date`.
+
+For RSSAC002 data the values for each date in a week are summed together. If the value for a date is `null`, a value of `0` is used instead.
+
+For `instance-count` setting `week` will return the maximum whole number for that week. (not implemented)
+
+For `instance-detail` setting `week` has no effect. (not implemented)
 
 `week` defaults to `null`.
 
@@ -54,7 +59,7 @@ the value for a date is `null`, a value of `0` is used instead.
 In addition to the standard parameters, `traffic-volume` takes an additional two parameters.
 
 #### totals
-`totals` can be set to either `sent` or `received`.
+`totals` can be set to either `sent` or `received` when calling `traffic-volume`.
 
 If set to `sent` the sum total of dns-tcp-responses-sent-ipv4, dns-tcp-responses-sent-ipv6, dns-udp-responses-sent-ipv4, and
 dns-udp-responses-sent-ipv6 will be returned.
@@ -65,8 +70,7 @@ dns-udp-queries-received-ipv6 will be returned.
 `totals` defaults to `null`.
 
 #### divisor
-`divisor` may be set to 1, or an integer greater than 1 and divisible
-by 10. All values returned are divided by `divisor`. This can be
+`divisor` may be set to 1, or an integer greater than 1 and divisible by 10. All values returned are divided by `divisor`. This can be
 useful when dealing with very large values.
 
 `divisor` defaults to 1.
