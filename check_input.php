@@ -43,11 +43,13 @@ if( basename($_SERVER['SCRIPT_NAME']) != 'instances-detail.php'){
 }
 
 $totals = false;
-if( isset($_GET['totals'])){
-  if( $_GET['totals'] == 'sent'){
-    $totals = 'sent';
-  }elseif( $_GET['totals'] == 'received'){
-    $totals = 'received';
+if( basename($_SERVER['SCRIPT_NAME']) == 'traffic-volume.php'){
+  if( isset($_GET['totals'])){
+    if( $_GET['totals'] == 'sent'){
+      $totals = 'sent';
+    }elseif( $_GET['totals'] == 'received'){
+      $totals = 'received';
+    }
   }
 }
 ?>
