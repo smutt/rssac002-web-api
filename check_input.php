@@ -1,5 +1,5 @@
 <?php
-/* Copyright Andrew McConachie <andrew@depht.com> 2021 */
+/* Copyright Andrew McConachie <andrew@depht.com> 2021 2024 */
 
 /*
     This file is part of the rssac002-web-api.
@@ -48,14 +48,4 @@ if( isset($_GET['totals'])){
     $totals = 'received';
   }
 }
-
-$divisor = 1;
-if( isset($_GET['divisor'])){
-  if( is_numeric($_GET['divisor'])){
-    if( $_GET['divisor'] > 0 && is_int($_GET['divisor'] / 10)){
-      $divisor = intval($_GET['divisor']);
-    }
-  }
-}
-
 ?>

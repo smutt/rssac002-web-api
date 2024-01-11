@@ -1,5 +1,5 @@
 <?php
-/* Copyright Andrew McConachie <andrew@depht.com> 2021 */
+/* Copyright Andrew McConachie <andrew@depht.com> 2021 2024 */
 
 /*
     This file is part of the rssac002-web-api.
@@ -21,7 +21,7 @@
 require_once "../../lib.php";
 require_once "../../check_input.php";
 
-$raw_metrics = handle_traffic_volume_request('traffic-volume', $_GET['rsi'], $start_date, $end_date, $divisor, $totals);
+$raw_metrics = handle_traffic_volume_request('traffic-volume', $_GET['rsi'], $start_date, $end_date, $totals);
 if( $raw_metrics === false){
   http_response_code(400);
   exit(1);

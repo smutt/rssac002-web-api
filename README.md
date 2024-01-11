@@ -56,7 +56,7 @@ For `instance-detail` setting `week` has no effect. (not implemented)
 `week` defaults to `null`.
 
 ### traffic-volume
-In addition to the standard parameters, `traffic-volume` takes an additional two parameters.
+In addition to the standard parameters, `traffic-volume` can take an additional parameter.
 
 #### totals
 `totals` can be set to either `sent` or `received` when calling `traffic-volume`.
@@ -68,12 +68,6 @@ If set to `received` the sum total of dns-tcp-queries-received-ipv4, dns-tcp-que
 dns-udp-queries-received-ipv6 will be returned.
 
 `totals` defaults to `null`.
-
-#### divisor
-`divisor` may be set to 1, or an integer greater than 1 and divisible by 10. All values returned are divided by `divisor`. This can be
-useful when dealing with very large values.
-
-`divisor` defaults to 1.
 
 ## Returned Data
 Data is returned in JSON dictionary format per rsi per date. In some cases the RSSAC002 data files cannot be read or are missing, in which
