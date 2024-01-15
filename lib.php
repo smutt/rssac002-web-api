@@ -64,9 +64,9 @@ function clean_bool_value($val){
     return NULL;
   }
   $clean = strtolower(trim($val));
-  if( strpos($clean, 'yes') == 0 || strpos($clean, 'true')){
+  if( str_contains($clean, 'yes') || str_contains($clean, 'true')){
     return true;
-  }elseif( strpos($clean, 'no') == 0 || strpos($clean, 'false')){
+  }elseif( str_contains($clean, 'no') || str_contains($clean, 'false')){
     return false;
   }
   return NULL;
@@ -233,7 +233,8 @@ function parse_yaml_file(string $metric, string $contents) {
     return $rv;
 
   case "instances-count":
-    $rv['instances-count'] = 0;
+    $rv['instances-count']['ipv4'] = 0;
+    $rv['instances-count']['ipv6'] = 0;
     if( array_key_exists('Instances', $yaml)){
       $top_key = 'Instances';
       $second_key = 'Sites';
@@ -246,7 +247,18 @@ function parse_yaml_file(string $metric, string $contents) {
 
     if( is_array($yaml[$top_key])){
       foreach( $yaml[$top_key] as $location){
-        $rv['instances-count'] += clean_whole_value($location[$second_key]);
+        if( array_key_exists('IPv4', $location)){
+          if( clean_bool_value($location['IPv4']) === true){
+            $rv['instances-count']['ipv4'] += clean_whole_value($location[$second_key]);
+          }
+        }else{ // Should never happen, but we assume IPv4 only instance if ipv4 key not present in YAML
+          $rv['instances-count']['ipv4'] += clean_whole_value($location[$second_key]);
+        }
+        if( array_key_exists('IPv6', $location)){
+          if( clean_bool_value($location['IPv6']) === true){
+            $rv['instances-count']['ipv6'] += clean_whole_value($location[$second_key]);
+          }
+        }
       }
     }else{
       return false;
