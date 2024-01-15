@@ -51,7 +51,9 @@ An inclusive date in the form YYYY-MM-DD that marks the end of the time series.
 `week` may be set or not set. If set, data is returned per ISO 8601 week instead of per date. The first week is the week
   containing `start_date`, and the last week is the week containing `end_date`.
 
-For RSSAC002 data the values for each date in a week are summed together. If the value for a date is `null`, a value of `0` is used instead.
+The values for each date in a week are summed together. If the value for a date is `null`, a value of `0` is used instead.
+
+For 'zone-size' data for all root zone serial numbers is returned.
 
 For `instance-detail` setting `week` has no effect.
 
