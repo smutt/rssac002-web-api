@@ -233,8 +233,8 @@ function parse_yaml_file(string $metric, string $contents) {
     return $rv;
 
   case "instances-count":
-    $rv['instances-count']['ipv4'] = 0;
-    $rv['instances-count']['ipv6'] = 0;
+    $rv['ipv4'] = 0;
+    $rv['ipv6'] = 0;
     if( array_key_exists('Instances', $yaml)){
       $top_key = 'Instances';
       $second_key = 'Sites';
@@ -249,14 +249,14 @@ function parse_yaml_file(string $metric, string $contents) {
       foreach( $yaml[$top_key] as $location){
         if( array_key_exists('IPv4', $location)){
           if( clean_bool_value($location['IPv4']) === true){
-            $rv['instances-count']['ipv4'] += clean_whole_value($location[$second_key]);
+            $rv['ipv4'] += clean_whole_value($location[$second_key]);
           }
         }else{ // Should never happen, but we assume IPv4 only instance if ipv4 key not present in YAML
-          $rv['instances-count']['ipv4'] += clean_whole_value($location[$second_key]);
+          $rv['ipv4'] += clean_whole_value($location[$second_key]);
         }
         if( array_key_exists('IPv6', $location)){
           if( clean_bool_value($location['IPv6']) === true){
-            $rv['instances-count']['ipv6'] += clean_whole_value($location[$second_key]);
+            $rv['ipv6'] += clean_whole_value($location[$second_key]);
           }
         }
       }
@@ -266,7 +266,7 @@ function parse_yaml_file(string $metric, string $contents) {
     return $rv;
 
   case "instances-detail":
-    $rv['instances-detail'] = array();
+    $rv = array();
     if( array_key_exists('Instances', $yaml)){
       $top_key = 'Instances';
       $second_key = 'Sites';
@@ -293,7 +293,7 @@ function parse_yaml_file(string $metric, string $contents) {
           if( array_key_exists('Longitude', $location)){
             $loc['Longitude'] = clean_float_value($location['Longitude']);
           }
-          array_push($rv['instances-detail'], $loc);
+          array_push($rv, $loc);
         }
       }
     }else{
