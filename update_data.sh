@@ -6,6 +6,13 @@ echo "Retrieving RSSAC002 data"
 cd $BASEDIR/RSSAC002-data
 git pull
 
+echo "Retrieving RZM data"
+cd $BASEDIR/RZM
+/usr/local/bin/wget --no-verbose --no-host-directories --max-redirect=0 --retry-on-host-error --recursive --https-only --no-clobber --no-parent --accept "*zone-size.yaml" https://a.root-servers.org/rssac-metrics/raw/$(date +"%Y")/$(date +"%m")/zone-size 2>&1
+
+# Now get the same from two days previous
+/usr/local/bin/wget --no-verbose --no-host-directories --max-redirect=0 --retry-on-host-error --recursive --https-only --no-clobber --no-parent --accept "*zone-size.yaml" https://a.root-servers.org/rssac-metrics/raw/$(date -r $(($(date +"%s") - 172800)) +"%Y")/$(date -r $(($(date +"%s") - 172800)) +"%m")/zone-size 2>&1
+
 echo "Retrieving rss instance data"
 cd $BASEDIR/instance-data
 rm $BASEDIR/instance-data/archives/index.html
