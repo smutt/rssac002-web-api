@@ -53,7 +53,7 @@ An inclusive date in the form YYYY-MM-DD that marks the end of the time series.
 
 The values for each date in a week are summed together. If the value for a date is `null`, a value of `0` is used instead.
 
-For 'zone-size' data for all root zone serial numbers is returned.
+For `zone-size` data for all root zone serial numbers is returned.
 
 For `instance-detail` setting `week` has no effect.
 
