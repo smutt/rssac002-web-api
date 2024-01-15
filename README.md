@@ -23,6 +23,8 @@ There are 10 entry points for the API that can receive HTTP GET requests and wil
 
 `api/v1/tcp-response-sizes`
 
+`api/v1/zone-size`
+
 `api/v1/instances-count`
 
 `api/v1/instances-detail`
@@ -36,6 +38,8 @@ A list of Root Server Identifiers(RSIs) to return data for. The `-` and `,` char
 `a-m`
 `a,b,m,f`
 `m,c-k`
+
+For `zone-size` setting `rsi` is not required and has no effect.
 
 #### start_date
 An inclusive date in the form YYYY-MM-DD that marks the beginning of the time series.

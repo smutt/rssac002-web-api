@@ -20,12 +20,13 @@
 
 // Globals
 $RSSAC002_DATA_ROOT = '../RSSAC002-data';
+$RZM_DATA_ROOT = '../RZM/rssac-metrics/raw';
 $INSTANCE_DATA_ROOT = '../instance-data/archives';
 $METRICS = ['udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes', 'rcode-volume',
-            'load-time', 'traffic-volume', 'unique-sources', 'zone-size', 'instances-count', 'instances-detail'];
+  'load-time', 'traffic-volume', 'unique-sources', 'zone-size', 'instances-count', 'instances-detail'];
 $RSIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'];
 
-$RSSAC002_START_YEAR = '2013'; // We have no RSSAC002 data before 2013
+$RSSAC002_START_YEAR = '2013'; // We have no RSSAC002 data before 2013. Also used for RZM data.
 $INSTANCE_START_YEAR = '2015'; 
 $INSTANCE_START_DATE = '2015-03-02'; // Our first instance data is from 2015-03-02
 

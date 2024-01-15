@@ -109,7 +109,45 @@ foreach( $METRICS as $metric){
         write_serialized_file($fname, $data);
       }
     }
-
+  }elseif($metric == 'zone-size'){ // Handle zone-size
+    print("\nProcessing zone-size from RZM");
+    for($year = $RSSAC002_START_YEAR; $year <= date("Y"); $year++){
+      $data = array();
+      $year_dir = $RZM_DATA_ROOT . "/" . $year;
+      foreach( scandir($year_dir) as $month) {
+        $month_dir = $year_dir . "/" . $month;
+        if( in_array('zone-size', scandir($month_dir))){
+          $metric_dir = $month_dir . "/zone-size";
+          foreach( scandir($metric_dir) as $ff){
+            if( !str_starts_with($ff, '.')){
+              $yaml_file = $metric_dir . "/" . $ff;
+              if( is_readable($yaml_file)) {
+                if( strpos($ff, 'a-root') === 0){
+                  $day = explode("-", $ff)[2];
+                }else{
+                  $day = explode("-", $ff)[1];
+                }
+                if( strpos($day, $year) === 0){
+                  $day_data = parse_yaml_file('zone-size', file_get_contents($yaml_file));
+                  if( $day_data === false){
+                    print("\nError parsing YAML file" . $yaml_file);
+                  }else{
+                    $dtime = DateTime::createFromFormat("Ymd", $day);
+                    $data[$dtime->format('Y-m-d')] = $day_data;
+                  }
+                }else{
+                  print("\nBad date in file format " . $yaml_file);
+                }
+              }else{
+                print("\nUnable to read file " . $yaml_file);
+              }
+            }
+          }
+        }
+      }
+      $fname = $SERIALIZED_ROOT . "/zone-size/a/" . $year . ".ser";
+      write_serialized_file($fname, $data);
+    }
   }else{ // Handle RSSAC002 metrics
     // Handle traffic-sizes special case
     if(in_array($metric, array('udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes'))){
@@ -156,9 +194,6 @@ foreach( $METRICS as $metric){
     }
   }
 }
-
-
-
 
 print("\nFinshed\n");
 ?>

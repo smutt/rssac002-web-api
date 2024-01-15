@@ -21,7 +21,14 @@
 //error_reporting(E_ALL);
 header('Content-Type: application/json');
 
-if( !isset($_GET['rsi']) || !isset($_GET['start_date']) || !isset($_GET['end_date'])){
+if( basename($_SERVER['SCRIPT_NAME']) != 'zone-size.php'){
+  if( !isset($_GET['rsi'])){
+    http_response_code(400);
+    exit(1);
+  }
+}
+
+if( !isset($_GET['start_date']) || !isset($_GET['end_date'])){
   http_response_code(400);
   exit(1);
 }
