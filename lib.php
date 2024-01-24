@@ -54,6 +54,18 @@ function write_serialized_file(string $fname, &$data){
   }
 }
 
+// Perform final value checking on string values read from YAML
+// Takes a potentially dirty value, returns a clean string value or NULL
+function clean_string_value($val){
+  if(! is_string($val)){
+    return NULL;
+  }
+
+  // A probably incomplete list of dangerous characters
+  return str_replace(array('`', '$', ':', ';', '-', '/', '*', '=', '{', '}', '(', ')', '&', '|', '\'', '\"'),
+                     '', trim($val));
+}
+
 // Perform final value checking on boolean values read from YAML
 // Takes a potentially dirty value, returns a clean boolean value or NULL
 function clean_bool_value($val){
@@ -292,6 +304,9 @@ function parse_yaml_file(string $metric, string $contents) {
           }
           if( array_key_exists('Longitude', $location)){
             $loc['Longitude'] = clean_float_value($location['Longitude']);
+          }
+          if( array_key_exists('Town', $location)){
+            $loc['Town'] = clean_string_value($location['Town']);
           }
           array_push($rv, $loc);
         }
