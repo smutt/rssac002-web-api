@@ -305,7 +305,7 @@ function parse_yaml_file(string $metric, string $contents) {
           $loc['Longitude'] = clean_float_value($location['Longitude']);
         }
         if( array_key_exists($second_key, $location)){
-          $loc['count'] = clean_whole_value($location[$second_key]);
+          $loc['Count'] = clean_whole_value($location[$second_key]);
         }
         if( array_key_exists('Town', $location)){
           $loc['Town'] = clean_string_value($location['Town']);
