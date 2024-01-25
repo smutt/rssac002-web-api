@@ -291,25 +291,26 @@ function parse_yaml_file(string $metric, string $contents) {
 
     if( is_array($yaml[$top_key])){
       foreach( $yaml[$top_key] as $location){
-        for($ii = 0; $ii < clean_whole_value($location[$second_key]); $ii++){
-          $loc = array();
-          if( array_key_exists('IPv4', $location)){
-            $loc['IPv4'] = clean_bool_value($location['IPv4']);
-          }
-          if( array_key_exists('IPv6', $location)){
-            $loc['IPv6'] = clean_bool_value($location['IPv6']);
-          }
-          if( array_key_exists('Latitude', $location)){
-            $loc['Latitude'] = clean_float_value($location['Latitude']);
-          }
-          if( array_key_exists('Longitude', $location)){
-            $loc['Longitude'] = clean_float_value($location['Longitude']);
-          }
-          if( array_key_exists('Town', $location)){
-            $loc['Town'] = clean_string_value($location['Town']);
-          }
-          array_push($rv, $loc);
+        $loc = array();
+        if( array_key_exists('IPv4', $location)){
+          $loc['IPv4'] = clean_bool_value($location['IPv4']);
         }
+        if( array_key_exists('IPv6', $location)){
+          $loc['IPv6'] = clean_bool_value($location['IPv6']);
+        }
+        if( array_key_exists('Latitude', $location)){
+          $loc['Latitude'] = clean_float_value($location['Latitude']);
+        }
+        if( array_key_exists('Longitude', $location)){
+          $loc['Longitude'] = clean_float_value($location['Longitude']);
+        }
+        if( array_key_exists($second_key, $location)){
+          $loc['count'] = clean_whole_value($location[$second_key]);
+        }
+        if( array_key_exists('Town', $location)){
+          $loc['Town'] = clean_string_value($location['Town']);
+        }
+        array_push($rv, $loc);
       }
     }else{
       return false;
