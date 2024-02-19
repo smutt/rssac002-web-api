@@ -77,34 +77,43 @@ foreach( $METRICS as $metric){
   print("\nSerializing " . $metric);
 
   if(in_array($metric, array('instances-count', 'instances-detail'))){ // Handle instance metrics
+    $interval = new DateInterval("P1D"); // 1 day
     foreach( $RSIS as $rsi){
       print("\nProcessing " . $metric . " for " . $rsi);
       for($year = $INSTANCE_START_YEAR; $year <= date("Y"); $year++){
         $data = array();
-        $dates = parse_dates($year . '-01-01', $year . '-12-31')[$year];
-        foreach($dates as $day){
-          if( DateTime::createFromFormat('Y-m-d', $day) < DateTime::createFromFormat('Y-m-d', $INSTANCE_START_DATE)){
+        $start_date = DateTime::createFromFormat("Y-m-d", $year . "-01-01");
+        $end_date = DateTime::createFromFormat("Y-m-d", $year . "-12-31");
+        $active_day = $start_date;
+        do{
+          if( $active_day < DateTime::createFromFormat('Y-m-d', $INSTANCE_START_DATE)){
+            $active_day->add($interval);
             continue;
           }
-          if( DateTime::createFromFormat('Y-m-d', $day) > DateTime::createFromFormat('Y-m-d', date('Y-m-d'))){
-            continue;
+          if( $active_day >= DateTime::createFromFormat('Y-m-d', date('Y-m-d'))){
+            break;
           }
-          $left_yaml_file = $INSTANCE_DATA_ROOT . '/' . $day . '/' . $rsi . '-root';
+          $left_yaml_file = $INSTANCE_DATA_ROOT . $active_day->format('/Y/m/d/') . $rsi . '-root';
+
           if( is_readable($left_yaml_file . '.yml')){
             $yaml_file = $left_yaml_file . '.yml';
           }elseif( is_readable($left_yaml_file . '.yaml')){
             $yaml_file = $left_yaml_file . '.yaml';
           }else{
-            print("\nNo readable file for " . $day . " " . $rsi);
+            print("\nMissing YAML " . $left_yaml_file);
+            $active_day->add($interval);
             continue;
           }
+
           $day_data = parse_yaml_file($metric, file_get_contents($yaml_file));
           if( $day_data === false){
             print("\nError parsing YAML file" . $yaml_file);
           }else{
-            $data[$day] = $day_data;
+            $data[$active_day->format('Y-m-d')] = $day_data;
           }
-        }
+          $active_day->add($interval);
+        }while($active_day <= $end_date);
+
         $fname = $SERIALIZED_ROOT . "/" . $metric . "/" . $rsi . "/" . $year . ".ser";
         write_serialized_file($fname, $data);
       }
