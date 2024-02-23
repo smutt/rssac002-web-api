@@ -1,6 +1,8 @@
 # rssac002-web-api
-A web API for RSSAC002 and RSS instance data. For RSSAC002 it uses the data collected [here](https://github.com/rssac-caucus/RSSAC002-data).
+A web API for RSSAC002 and root server system (RSS) instance data.
+For RSSAC002 data it uses the data collected [here](https://github.com/rssac-caucus/RSSAC002-data).
 For RSS instance data it uses the data available [here](https://root-servers.org/archives/).
+For root zone maintainer (RZM) data it uses the data available [here](https://a.root-servers.org/rssac-metrics/raw/).
 
 It is currently used by the charts hosted [here](https://rssac002.root-servers.org).
 
@@ -30,7 +32,8 @@ There are 10 entry points for the API that can receive HTTP GET requests and wil
 `api/v1/instances-detail`
 
 ## Parameters
-All entry points take the following four parameters: rsi, start_date, end_date, and week.
+The following parameters are described below:
+  `rsi`, `start_date`, `end_date`, `sum`, `totals`, and `week`.
 
 #### rsi
 A list of Root Server Identifiers(RSIs) to return data for. The `-` and `,` characters are special delimiters.
@@ -39,17 +42,23 @@ A list of Root Server Identifiers(RSIs) to return data for. The `-` and `,` char
 `a,b,m,f`
 `m,c-k`
 
-For `zone-size` setting `rsi` is not required and has no effect.
+`rsi` is not required and has no effect for entry point `zone-size`. All other entry points require `rsi`.
 
 #### start_date
-An inclusive date in the form YYYY-MM-DD that marks the beginning of the time series.
+An inclusive date in the form YYYY-MM-DD that marks the beginning of the time series. `start-date` is required for all entry points.
 
 #### end_date
-An inclusive date in the form YYYY-MM-DD that marks the end of the time series.
+An inclusive date in the form YYYY-MM-DD that marks the end of the time series. `end-date` is required for all entry points.
+
+#### sum
+`sum` may be set or not set for all entry points.
+If set, data for all RSIs is summed together for each date. If `week` is set, data is summed together for each week.
+
+`sum` has no effect for entry points `instances-detail`, `load-time`, and `zone-size`.
 
 #### week
-`week` may be set or not set. If set, data is returned per ISO 8601 week instead of per date. The first week is the week
-  containing `start_date`, and the last week is the week containing `end_date`.
+`week` may be set or not set for all entry points.
+If set, data is returned per ISO 8601 week instead of per date. The first week is the week containing `start_date`, and the last week is the week containing `end_date`.
 
 The values for each date in a week are summed together. If the value for a date is `null`, a value of `0` is used instead.
 
@@ -60,7 +69,7 @@ For `instance-detail` setting `week` has no effect.
 `week` defaults to `null`.
 
 ### traffic-volume
-In addition to the standard parameters, `traffic-volume` can take an additional parameter.
+In addition to the standard parameters, the `traffic-volume` entry point can take the additional parameter `totals`.
 
 #### totals
 `totals` can be set to either `sent` or `received` when calling `traffic-volume`.
