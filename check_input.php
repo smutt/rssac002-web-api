@@ -41,6 +41,15 @@ if( !check_dates($_GET['start_date'], $_GET['end_date'])){
   $end_date = $_GET['end_date'];
 }
 
+$sum = false;
+if( (basename($_SERVER['SCRIPT_NAME']) != 'instances-detail.php') &&
+    (basename($_SERVER['SCRIPT_NAME']) != 'load-time.php') &&
+    (basename($_SERVER['SCRIPT_NAME']) != 'zone-size.php')){
+   if( isset($_GET['sum'])){
+    $sum = true;
+   }
+}
+
 $week = false;
 if( basename($_SERVER['SCRIPT_NAME']) != 'instances-detail.php'){
   if( isset($_GET['week'])){

@@ -56,6 +56,8 @@ If set, data for all RSIs is summed together for each date. If `week` is set, da
 
 `sum` has no effect for entry points `instances-detail`, `load-time`, and `zone-size`.
 
+`sum` defaults to `null`.
+
 #### week
 `week` may be set or not set for all entry points.
 If set, data is returned per ISO 8601 week instead of per date. The first week is the week containing `start_date`, and the last week is the week containing `end_date`.
@@ -64,7 +66,7 @@ The values for each date in a week are summed together. If the value for a date 
 
 For `zone-size` data for all root zone serial numbers is returned.
 
-For `instance-detail` setting `week` has no effect.
+For `instances-detail` setting `week` has no effect.
 
 `week` defaults to `null`.
 
@@ -83,8 +85,9 @@ dns-udp-queries-received-ipv6 will be returned.
 `totals` defaults to `null`.
 
 ## Returned Data
-Data is returned in JSON dictionary format per rsi per date. In some cases the RSSAC002 data files cannot be read or are missing, in which
-case `null` will be returned for a given value. Programs using this data should be able to handle potential `null` values for any value.
+If `sum` is unset, data is returned in JSON dictionary format per rsi per date. If `sum` is set, data is returned in JSON dictionary format per date.
+
+In some cases the RSSAC002 data files cannot be read or are missing, in which case `null` will be returned for a given value. Programs using this data should be able to handle potential `null` values for any value.
 
 If a Javascript program is going to be using this data, a function like the following is useful.
 ```

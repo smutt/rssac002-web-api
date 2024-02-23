@@ -31,6 +31,10 @@ if( $week === true){
   $raw_metrics = weekify_output($raw_metrics);
 }
 
+if( $sum === true){
+  $raw_metrics = summify_output($raw_metrics);
+}
+
 $output = json_encode($raw_metrics);
 if( $output === false){
   http_response_code(500);

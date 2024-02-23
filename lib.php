@@ -415,6 +415,58 @@ function parse_dates(string $start, string $end){
   return $rv;
 }
 
+// Takes metrics per-rsi per-date (day or week)
+// Returns metrics per-date
+// Dangerously assumes the first date of the first rsi in $metrics has the correct data format
+function summify_output($metrics){
+  $rv = array();
+  foreach( $metrics as $rsi => $dates){
+    foreach( $dates as $date => $data){
+      if( !array_key_exists($date, $rv)){
+        if( is_array($data)){
+          $rv[$date] = array();
+          foreach( $data as $key => $val){
+            if( is_array($val)) { return $metrics; } // This should never happen
+            if( !is_numeric($val)){ return $metrics; } // This should never happen
+            $rv[$date][$key] = $val;
+          }
+        }else{
+          if( $data !== null){
+            $rv[$date] = $data;
+          }
+        }
+      }else{
+        if( is_array($data)){
+          foreach( $data as $key => $val){
+            if( !array_key_exists($key, $rv[$date])){
+              $rv[$date][$key] = 0;
+            }
+
+            if( $rv[$date][$key] === null){
+              $rv[$date][$key] = $val;
+            }else{
+              $rv[$date][$key] += $val;
+            }
+          }
+        }else{
+          if( !array_key_exists($date, $rv)){
+            $rv[$date] = 0;
+          }
+
+          if( $rv[$date] === null){
+            $rv[$date] = $data;
+          }else{
+            if( !($data === null || $data == 0)){ // weekify_output() will replace arrays with zeros when day values are null
+               $rv[$date] = $data;
+            }
+          }
+        }
+      }
+    }
+  }
+  return $rv;
+}
+
 // Adjust $start and $end so they start and end on a Monday and Sunday respectively
 // Returns false if dates are bad
 // Returns start date of Monday immediately before $start
