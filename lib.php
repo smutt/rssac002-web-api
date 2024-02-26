@@ -416,7 +416,7 @@ function parse_dates(string $start, string $end){
 }
 
 // Takes metrics per-rsi per-date (day or week)
-// Returns metrics per-date
+// Returns metrics per-date summed for all RSIs
 // Dangerously assumes the first date of the first rsi in $metrics has the correct data format
 function summify_output($metrics){
   $rv = array();
@@ -435,6 +435,7 @@ function summify_output($metrics){
             $rv[$date] = $data;
           }
         }
+
       }else{
         if( is_array($data)){
           foreach( $data as $key => $val){
@@ -456,8 +457,8 @@ function summify_output($metrics){
           if( $rv[$date] === null){
             $rv[$date] = $data;
           }else{
-            if( !($data === null || $data == 0)){ // weekify_output() will replace arrays with zeros when day values are null
-               $rv[$date] = $data;
+            if( $data !== null){
+               $rv[$date] += $data;
             }
           }
         }
