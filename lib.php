@@ -422,7 +422,7 @@ function summify_output($metrics){
   $rv = array();
   foreach( $metrics as $rsi => $dates){
     foreach( $dates as $date => $data){
-      if( !array_key_exists($date, $rv)){
+      if( !array_key_exists($date, $rv)){ // Determine zeroth element of $rv
         if( is_array($data)){
           $rv[$date] = array();
           foreach( $data as $key => $val){
@@ -436,8 +436,12 @@ function summify_output($metrics){
           }
         }
 
-      }else{
-        if( is_array($data)){
+      }else{ // Fill in additional elements of $rv
+        if( is_array($rv[$date])){
+          if( !is_array($data)){
+            continue;
+          }
+
           foreach( $data as $key => $val){
             if( !array_key_exists($key, $rv[$date])){
               $rv[$date][$key] = 0;
@@ -458,7 +462,7 @@ function summify_output($metrics){
             $rv[$date] = $data;
           }else{
             if( $data !== null){
-               $rv[$date] += $data;
+              $rv[$date] += $data;
             }
           }
         }
