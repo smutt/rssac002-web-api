@@ -18,9 +18,11 @@ cd $BASEDIR/instance-data
 rm $BASEDIR/instance-data/archives/index.html
 if [ "$(date +%m)" -eq "01" ] # Delete index.html from last 2 months
 then
+    find $BASEDIR/instance-data/archives/$(echo "$(date +%Y)-1" | bc) -name "index.html" -delete
     find $BASEDIR/instance-data/archives/$(date +%Y)/01 -name "index.html" -delete
     find $BASEDIR/instance-data/archives/$(echo "$(date +%Y)-1" | bc)/12 -name "index.html" -delete
 else
+    find $BASEDIR/instance-data/archives/$(date +%Y) -name "index.html" -delete
     find $BASEDIR/instance-data/archives/$(date +%Y)/$(date +%m) -name "index.html" -delete
     find $BASEDIR/instance-data/archives/$(date +%Y)/$(printf '%02d' $(echo "$(date +%m)-1" | bc)) -name "index.html" -delete
 fi
