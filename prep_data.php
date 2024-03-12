@@ -204,5 +204,5 @@ foreach( $METRICS as $metric){
   }
 }
 
-print("\nFinshed\n");
+print("\n\nFinished\n");
 ?>

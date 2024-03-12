@@ -64,7 +64,7 @@ If set, data is returned per ISO 8601 week instead of per date. The first week i
 
 The values for each date in a week are summed together. If the value for a date is `null`, a value of `0` is used instead.
 
-For `zone-size` data for all root zone serial numbers is returned.
+For `load-time` and `zone-size` data for all root zone serial numbers is returned. Values are not summed together.
 
 For `instances-detail` setting `week` has no effect.
 
