@@ -75,11 +75,21 @@ function clean_bool_value($val){
   if(! is_string($val)){
     return NULL;
   }
+
+  // Forgive me father for I have sinned
   $clean = strtolower(trim($val));
-  if( str_contains($clean, 'yes') || str_contains($clean, 'true')){
-    return true;
-  }elseif( str_contains($clean, 'no') || str_contains($clean, 'false')){
-    return false;
+  if( function_exists('str_contains')) { // PHP_VERSION >=8
+    if( str_contains($clean, 'yes') || str_contains($clean, 'true')){
+      return true;
+    }elseif( str_contains($clean, 'no') || str_contains($clean, 'false')){
+      return false;
+    }
+  }else{ // PHP_VERSION < 8
+    if( strpos($clean, 'yes') !== false || strpos($clean, 'true') !== false){
+      return true;
+    }elseif( strpos($clean, 'no') !== false || strpos($clean, 'false') !== false){
+      return false;
+    }
   }
   return NULL;
 }

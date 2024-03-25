@@ -128,7 +128,7 @@ foreach( $METRICS as $metric){
         if( in_array('zone-size', scandir($month_dir))){
           $metric_dir = $month_dir . "/zone-size";
           foreach( scandir($metric_dir) as $ff){
-            if( !str_starts_with($ff, '.')){
+            if( strpos($ff, '.') != 0){
               $yaml_file = $metric_dir . "/" . $ff;
               if( is_readable($yaml_file)) {
                 if( strpos($ff, 'a-root') === 0){
@@ -136,7 +136,7 @@ foreach( $METRICS as $metric){
                 }else{
                   $day = explode("-", $ff)[1];
                 }
-                if( strpos($day, $year) === 0){
+                if( strpos($day, $year) == 0){
                   $day_data = parse_yaml_file('zone-size', file_get_contents($yaml_file));
                   if( $day_data === false){
                     print("\nError parsing YAML file" . $yaml_file);
@@ -179,7 +179,7 @@ foreach( $METRICS as $metric){
                 $yaml_file = $metric_dir . "/" . $ff;
                 if( is_readable($yaml_file)) {
                   $day = explode("-", $ff)[2];
-                  if( strpos($day, $year) === 0){
+                  if( strpos($day, $year) == 0){
                     $day_data = parse_yaml_file($metric, file_get_contents($yaml_file));
                     if( $day_data === false){
                       print("\nError parsing YAML file" . $yaml_file);
