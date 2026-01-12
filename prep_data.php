@@ -40,6 +40,17 @@ if( !is_dir($SERIALIZED_ROOT)){
   exit(1);
 }
 
+// Parse CLI options, useful for debugging
+$shortopts = "m::"; // Only process this metric
+$shortopts .= "r::"; // Only process this RSI
+$opts = getopt($shortopts);
+if( array_key_exists("m", $opts)){
+  $METRICS = array($opts['m']);
+}
+if( array_key_exists("r", $opts)){
+  $RSIS = array($opts['r']);
+}
+
 // Create any necessary directories and set permissions
 foreach($METRICS as $metric){
   foreach($RSIS as $rsi){
