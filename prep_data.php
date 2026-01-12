@@ -45,10 +45,18 @@ $shortopts = "m::"; // Only process this metric
 $shortopts .= "r::"; // Only process this RSI
 $opts = getopt($shortopts);
 if( array_key_exists("m", $opts)){
-  $METRICS = array($opts['m']);
+  if( !in_array($opts["m"], $METRICS)){
+    error_log("Invalid metric");
+    exit(1);
+  }
+  $METRICS = array($opts["m"]);
 }
 if( array_key_exists("r", $opts)){
-  $RSIS = array($opts['r']);
+  if( !in_array($opts["r"], $RSIS)){
+    error_log("Invalid RSI");
+    exit(1);
+  }
+  $RSIS = array($opts["r"]);
 }
 
 // Create any necessary directories and set permissions
