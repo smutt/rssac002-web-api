@@ -35,7 +35,7 @@ if( $sum === true){
   $raw_metrics = summify_output($raw_metrics);
 }
 
-$output = json_encode($raw_metrics);
+$output = json_encode($raw_metrics, JSON_FORCE_OBJECT);
 if( $output === false){
   http_response_code(500);
   exit(1);
