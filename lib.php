@@ -485,7 +485,7 @@ function summify_output($metrics){
 // Adjust $start and $end so they start and end on a Monday and Sunday respectively
 // Returns false if dates are bad
 // Returns start date of Monday immediately before $start
-// Returns end date of Sunday immediately after $end
+// Returns end date of Sunday immediately before $end
 function weekify_dates(string $start, string $end){
   if( !check_dates($start, $end)){
       return false;
@@ -500,7 +500,7 @@ function weekify_dates(string $start, string $end){
   }
 
   while(intval($end_date->format('N')) < 7){
-    $end_date->add($interval);
+    $end_date->sub($interval);
   }
 
   return array($start_date->format("Y-m-d"), $end_date->format("Y-m-d"));
