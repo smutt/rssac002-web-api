@@ -60,7 +60,7 @@ If set, data for all RSIs is summed together for each date. If `week` is set, da
 
 #### week
 `week` may be set or not set for all entry points.
-If set, data is returned per ISO 8601 week instead of per date. The first week is the week containing `start_date`, and the last week is the week containing `end_date`.
+If set, data is returned per ISO 8601 week instead of per date. The first week is the week containing `start_date`. The last week is the week ending on the Sunday prior to, or on, `end_date`.
 
 The values for each date in a week are summed together. If the value for a date is `null`, a value of `0` is used instead.
 
