@@ -1,6 +1,6 @@
 #!/usr/local/bin/bash
 
-BASEDIR=/home/smutt/rssac002.depht.com
+BASEDIR=/home/smutt/www
 WGET=/usr/local/bin/wget
 OS=bsd #linux || bsd
 

@@ -511,8 +511,16 @@ function weekify_output($metrics){
   // Check if dates are weekified
   $start_date = DateTime::createFromFormat("Y-m-d", array_key_first(array_values($metrics)[0]));
   $end_date = DateTime::createFromFormat("Y-m-d", array_key_last(array_values($metrics)[0]));
-  if( $start_date->format('N') != '1' || $end_date->format('N') != '7'){
-    return false; // This should never happen
+  if( $start_date->format('N') != '1'){ // This should never happen
+    return false;
+  }
+  if( $end_date->format('N') != '7'){ // This can happen because of trim_empty_end_values()
+    $letters = array_keys($metrics);
+    for($ii = $end_date->format('N'); $ii > 0; $ii--){
+      foreach( $letters as $let){
+        array_pop($metrics[$let]);
+      }
+    }
   }
 
   $rv = array();
@@ -572,6 +580,7 @@ function weekify_output($metrics){
   return $rv;
 }
 
+// High-level function for getting metrics by date
 function get_metrics_by_date(string $metric, string $letters, string $start_date, string $end_date){
   global $METRICS;
   global $SERIALIZED_ROOT;
@@ -606,6 +615,7 @@ function get_metrics_by_date(string $metric, string $letters, string $start_date
 }
 
 // Specific handler for traffic-volume
+// Wrapper for get_metrics_by_date()
 function handle_traffic_volume_request(string $metric, string $letters, string $start_date, string $end_date, $totals){
   // Check input
   if( !(is_bool($totals) || $totals === 'sent' || $totals === 'received')) { return false; }
@@ -651,5 +661,20 @@ function handle_traffic_volume_request(string $metric, string $letters, string $
     }
   }
   return $rv;
+}
+
+// Trim empty values from the end of $metrics
+// Should be called after get_metrics_by_date() or handle_traffic_volume_request()
+// Evenly trims nulls and 0 values from the end of each RSI array
+function trim_empty_end_values(array $metrics){
+  $letters = array_keys($metrics);
+  foreach( $letters as $let){
+    $last = array_key_last($metrics[$let]);
+    if( $metrics[$let][$last] != null || $metrics[$let][$last] != 0) return $metrics;
+  }
+  foreach( $letters as $let){
+    array_pop($metrics[$let]);
+  }
+  return trim_empty_end_values($metrics);
 }
 ?>

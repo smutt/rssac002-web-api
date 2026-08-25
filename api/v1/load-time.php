@@ -27,6 +27,7 @@ if( $raw_metrics === false){
   exit(1);
 }
 
+$raw_metrics = trim_empty_end_values($raw_metrics);
 if( $week === true){
   $raw_metrics = weekify_output($raw_metrics);
 }
