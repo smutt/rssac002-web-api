@@ -1,5 +1,5 @@
 <?php
-/* Copyright Andrew McConachie <andrew@depht.com> 2021 */
+/* Copyright Andrew McConachie <andrew@depht.com> 2021 2026 */
 
 /*
     This file is part of the rssac002-web-api.
@@ -27,6 +27,7 @@ if( $raw_metrics === false){
   exit(1);
 }
 
+$raw_metrics = trim_empty_end_values($raw_metrics);
 if( $week === true){
   $raw_metrics = weekify_output($raw_metrics);
 }

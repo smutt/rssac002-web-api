@@ -441,7 +441,9 @@ function summify_output($metrics){
             $rv[$date][$key] = $val;
           }
         }else{
-          if( $data !== null){
+          if( $data === null){
+            $rv[$date] = null;
+          }else{
             $rv[$date] = $data;
           }
         }

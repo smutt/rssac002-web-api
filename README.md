@@ -54,6 +54,8 @@ An inclusive date in the form YYYY-MM-DD that marks the end of the time series. 
 `sum` may be set or not set for all entry points.
 If set, data for all RSIs is summed together for each date. If `week` is set, data is summed together for each week.
 
+If all RSIs report `null` for a given date their summed value is `null`, otherwise `null` is treated as 0 when summing values.
+
 `sum` has no effect for entry points `instances-detail`, `load-time`, and `zone-size`.
 
 `sum` defaults to `null`.
