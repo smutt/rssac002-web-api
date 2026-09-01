@@ -8,18 +8,6 @@ echo "Retrieving RSSAC002 data"
 cd $BASEDIR/RSSAC002-data
 git pull
 
-echo "Retrieving RZM data"
-cd $BASEDIR/RZM
-$WGET --no-verbose --no-host-directories --max-redirect=0 --recursive --https-only --no-clobber --no-parent --accept "*zone-size.yaml" https://a.root-servers.org/rssac-metrics/raw/$(date +"%Y")/$(date +"%m")/zone-size 2>&1
-
-# Now get the same from the month of two days previous
-if [ "$OS" = "linux" ]
-then
-        $WGET --no-verbose --no-host-directories --max-redirect=0 --recursive --https-only --no-clobber --no-parent --accept "*zone-size.yaml" https://a.root-servers.org/rssac-metrics/raw/$(date --date=@$(($(date +"%s") - 172800)) +"%Y")/$(date --date=@$(($(date +"%s") - 172800)) +"%m")/zone-size 2>&1
-else
-        $WGET --no-verbose --no-host-directories --max-redirect=0 --recursive --https-only --no-clobber --no-parent --accept "*zone-size.yaml" https://a.root-servers.org/rssac-metrics/raw/$(date -r $(($(date +"%s") - 172800)) +"%Y")/$(date -r $(($(date +"%s") - 172800)) +"%m")/zone-size 2>&1
-fi
-
 echo "Retrieving rss instance data"
 cd $BASEDIR/instance-data
 rm $BASEDIR/instance-data/archives/index.html

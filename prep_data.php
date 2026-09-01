@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-/* Copyright Andrew McConachie <andrew@depht.com> 2021, 2024 */
+/* Copyright Andrew McConachie <andrew@depht.com> 2021, 2024, 2026 */
 
 /*
     This file is part of the rssac002-web-api.
@@ -46,7 +46,7 @@ $shortopts .= "r::"; // Only process this RSI
 $opts = getopt($shortopts);
 if( array_key_exists("m", $opts)){
   if( !in_array($opts["m"], $METRICS)){
-    error_log("Invalid metric");
+    error_log("Invalid metric:" . $opts["m"]);
     exit(1);
   }
   $METRICS = array($opts["m"]);
@@ -62,6 +62,7 @@ if( array_key_exists("r", $opts)){
 // Create any necessary directories and set permissions
 foreach($METRICS as $metric){
   foreach($RSIS as $rsi){
+    if( $metric == 'zone-size') { $rsi = 'a'; }
     $path = $SERIALIZED_ROOT . '/' . $metric . '/' . $rsi;
     if( !is_dir($path)){
       if( !mkdir($path, 0755, true)){
@@ -138,36 +139,40 @@ foreach( $METRICS as $metric){
       }
     }
   }elseif($metric == 'zone-size'){ // Handle zone-size
-    print("\nProcessing zone-size from RZM");
+    print("\nProcessing zone-size from RZM"); // RSSAC002v4 specified that only the RZM should report zone-size
+    //continue; // Under development
+
+    $rzm_name = array_shift($RZM_NAMES);
     for($year = $RSSAC002_START_YEAR; $year <= date("Y"); $year++){
       $data = array();
-      $year_dir = $RZM_DATA_ROOT . "/" . $year;
-      foreach( scandir($year_dir) as $month) {
+      $year_dir = $RSSAC002_DATA_ROOT . "/" . $year;
+      foreach( scandir($year_dir) as $month){
         $month_dir = $year_dir . "/" . $month;
         if( in_array('zone-size', scandir($month_dir))){
           $metric_dir = $month_dir . "/zone-size";
           foreach( scandir($metric_dir) as $ff){
-            if( strpos($ff, '.') != 0){
-              $yaml_file = $metric_dir . "/" . $ff;
-              if( is_readable($yaml_file)) {
-                if( strpos($ff, 'a-root') === 0){
-                  $day = explode("-", $ff)[2];
-                }else{
-                  $day = explode("-", $ff)[1];
-                }
-                if( strpos($day, $year) == 0){
-                  $day_data = parse_yaml_file('zone-size', file_get_contents($yaml_file));
-                  if( $day_data === false){
-                    print("\nError parsing YAML file" . $yaml_file);
+            if( !str_starts_with($ff, '.')){
+              if( str_starts_with($ff, $rzm_name)){
+                $yaml_file = $metric_dir . "/" . $ff;
+                if( is_readable($yaml_file)) {
+                  $day = explode("-", explode($rzm_name, basename($ff))[1])[1];
+                  if( str_starts_with($day, $year)){
+                    $day_data = parse_yaml_file('zone-size', file_get_contents($yaml_file));
+                    if( $day_data === false){
+                      print("\nError parsing YAML file" . $yaml_file);
+                    }else{
+                      $dtime = DateTime::createFromFormat("Ymd", $day);
+                      $data[$dtime->format('Y-m-d')] = $day_data;
+                    }
                   }else{
-                    $dtime = DateTime::createFromFormat("Ymd", $day);
-                    $data[$dtime->format('Y-m-d')] = $day_data;
+                    print("\nBad date in file format " . $yaml_file);
                   }
                 }else{
-                  print("\nBad date in file format " . $yaml_file);
+                  print("\nUnable to read file " . $yaml_file);
                 }
-              }else{
-                print("\nUnable to read file " . $yaml_file);
+                if( basename($yaml_file) == array_key_first($RZM_NAMES)){
+                  $rzm_name = array_shift($RZM_NAMES);
+                }
               }
             }
           }
@@ -178,12 +183,11 @@ foreach( $METRICS as $metric){
     }
   }else{ // Handle RSSAC002 metrics
     // Handle traffic-sizes special case
-    if(in_array($metric, array('udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes'))){
+    if( in_array($metric, array('udp-request-sizes', 'udp-response-sizes', 'tcp-request-sizes', 'tcp-response-sizes'))){
       $metric_file = 'traffic-sizes';
     }else{
       $metric_file = $metric;
     }
-
     foreach( $RSIS as $rsi){
       print("\nProcessing " . $metric . " for " . $rsi);
       for($year = $RSSAC002_START_YEAR; $year <= date("Y"); $year++){
