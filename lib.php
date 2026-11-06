@@ -40,6 +40,13 @@ if( php_sapi_name() == 'cli'){
   $SERIALIZED_ROOT = __DIR__ . '/serialized';
 }
 
+// Remove this after upgrading to PHP 8.5
+if( !function_exists("array_last")){
+  function array_last(array $array){
+    return $array ? $array[array_key_last($array)] : null;
+  }
+}
+
 // Writes a serialized version of passed $data to $fname
 function write_serialized_file(string $fname, &$data){
   print("\nWriting " . $fname);
@@ -333,53 +340,66 @@ function parse_yaml_file(string $metric, string $contents) {
   }
 }
 
-// Takes a string representing some sequence of letter
-// Returns an array of letters, all valid RSIs
-// Return false if string is invalid
+
 function parse_letters(string $input){
   global $RSIS;
 
-  // Check input
   $input = trim(strtolower($input));
   if( strlen($input) > 50 || strlen($input) < 1){ return false; }
-  $allowed_chars = array_merge($RSIS, array(",", "-"));
+
+  $allowed_chars = [];
+  foreach($RSIS as $RSI){
+    $allowed_chars = array_merge($allowed_chars, str_split($RSI));
+  }
+  $allowed_chars = array_merge($allowed_chars, array(",", "-"));
+
   if( str_replace($allowed_chars, "", $input) !== ""){ return false; }
   if( trim($input, ",-") !== $input){ return false; }
   if( strpos($input, ",-") !== false){ return false; }
   if( strpos($input, "-,") !== false){ return false; }
 
-  $input = str_split($input);
-  if( $input[0] === "," || $input[0] === "-"){ return false; }
-  if( end($input) === "," || end($input) === "-"){ return false; }
+  $tokens = [];
+  $tmp = '';
+  foreach(str_split($input) as $tok){
+    if($tok == ',' || $tok == '-'){
+      array_push($tokens, $tmp);
+      array_push($tokens, $tok);
+      $tmp = '';
+    }else{
+      $tmp .= $tok;
+    }
+  }
+  array_push($tokens, $tmp);
 
+  // Walk the logic of $input and build return array
   $rv = [];
-  $range_begin = "";
-  foreach( $input as $tok){
-    if( $range_begin){ // Previous character was a '-'
-      if( !in_array($tok, $RSIS)){ // $tok must be a letter here
-        return false;
-      }elseif( $range_begin >= $tok){ // range must be ascending
+  $range_begin = '';
+  foreach($tokens as $tok){
+    if( strlen($range_begin) > 0){ // Previous $tok was a '-'
+      if( $range_begin >= $tok){ // range must be ascending
         return false;
       }else{
         foreach($RSIS as $rsi){
-          if( $rsi > $range_begin && $rsi < $tok){
+          if( $rsi > $range_begin && $rsi <= $tok){
             if( !in_array($rsi, $rv)){
               array_push($rv, $rsi);
             }
           }
         }
       }
-      $range_begin = "";
-    }
-
-    if( in_array($tok, $RSIS)){
-      if( !in_array($tok, $rv)){
-        array_push($rv, $tok);
+      $range_begin = '';
+    }else{
+      if( $tok == ','){
+        continue;
+      }elseif( $tok == '-'){
+        $range_begin = array_last($rv);
+      }else{
+        if( in_array($tok, $RSIS)){
+          array_push($rv, $tok);
+        }else{
+          return false; // Be strict
+        }
       }
-    }elseif( $tok === ","){
-      continue;
-    }elseif( $tok === "-"){
-      $range_begin = end($rv);
     }
   }
   sort($rv, SORT_STRING);
